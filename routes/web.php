@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Mark_modificationsController;
+use App\Http\Controllers\RegisterUsersController;
+use App\Models\RegisterUser;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +16,3 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});

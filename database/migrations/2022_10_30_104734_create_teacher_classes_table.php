@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMarkModificationsTable extends Migration
+class CreateTeacherClassesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateMarkModificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('mark_modifications', function (Blueprint $table) {
+        Schema::create('teacher_classes', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-
-            $table->
+            $table->foreignId('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
+            $table->foreignId('class_id')->references('id')->on('school_classes')->onDelete('cascade');
         });
     }
 
@@ -28,6 +27,6 @@ class CreateMarkModificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mark_modifications');
+        Schema::dropIfExists('teacher_classes');
     }
 }
