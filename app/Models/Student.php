@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
-    public function registerUser(){
+    public function registerUser()
+    {
         return $this->haOne(RegisterUser::class);
     }
-    public function marks(){
+    public function marks()
+    {
         return $this->hasMany(Mark::class);
     }
+    protected $fillable = [
+        'user_id', 'class_id'
+    ];
 }

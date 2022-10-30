@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterUsersController;
+use App\Models\RegisterUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +19,5 @@ use App\Http\Controllers\RegisterUsersController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('users', [RegisterUsersController::class, 'getAll']);
+// Route::get('users', [RegisterUsersController::class, 'getAll']);
+Route::apiResource('users', RegisterUsersController::class);
