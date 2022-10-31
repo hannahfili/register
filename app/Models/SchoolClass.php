@@ -10,11 +10,16 @@ class SchoolClass extends Model
 {
     use HasFactory;
 
-    
-    public function teachers(){
+
+    public function teachers()
+    {
         return $this->belongsToMany(Teacher::class);
     }
-    public function subjects(){
+    public function subjects()
+    {
         return $this->belongsToMany(Subject::class);
     }
+    protected $fillable = [
+        'name', 'class_start', 'class_end'
+    ];
 }

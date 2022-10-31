@@ -44,7 +44,7 @@ class RegisterUsersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response($validator->errors(), 400);
         }
 
         if ($request->isTeacher == true) {
@@ -52,7 +52,7 @@ class RegisterUsersController extends Controller
                 'subject_id' => 'required'
             ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors());
+                return response($validator->errors(), 400);
             }
         }
         if ($request->isStudent == true) {
@@ -60,7 +60,7 @@ class RegisterUsersController extends Controller
                 'class_id' => 'required'
             ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors());
+                return response($validator->errors(), 400);
             }
         }
 
@@ -124,7 +124,7 @@ class RegisterUsersController extends Controller
                 'name' => 'string|max:199'
             ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors());
+                return response($validator->errors(), 400);
             }
             $userToUpdate->name = $request->name;
         }
@@ -133,7 +133,7 @@ class RegisterUsersController extends Controller
                 'surname' => 'string|max:199'
             ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors());
+                return response($validator->errors(), 400);
             }
             $userToUpdate->surname = $request->surname;
         }
@@ -142,7 +142,7 @@ class RegisterUsersController extends Controller
                 'email' => 'email'
             ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors());
+                return response($validator->errors(), 400);
             }
             $userWithEmail = RegisterUser::where('email', $request->email)->first();
             if ($userWithEmail === null) {

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterUsersController;
+use App\Http\Controllers\SchoolClassesController;
 use App\Models\RegisterUser;
 
 /*
@@ -21,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 // Route::get('users', [RegisterUsersController::class, 'getAll']);
 Route::apiResource('users', RegisterUsersController::class);
+Route::apiResource('school_classes', SchoolClassesController::class);
+Route::post('add_student_to_class/{class_id}/{user_id}', [SchoolClassesController::class, 'addStudent']);
