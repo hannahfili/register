@@ -26,6 +26,7 @@ class RegisterUserResource extends JsonResource
                 'name' => $this->name,
                 'surname' => $this->surname,
                 'email' => $this->email,
+                'isAdmin' => $this->isAdmin,
                 'isStudent' => true,
                 'class_id' => $student->class_id
             ];
@@ -36,22 +37,17 @@ class RegisterUserResource extends JsonResource
                 'name' => $this->name,
                 'surname' => $this->surname,
                 'email' => $this->email,
+                'isAdmin' => $this->isAdmin,
                 'isTeacher' => true,
                 'subject_id' => $teacher->subject_id
             ];
         }
-        // return [
-        //     $teacher
-        // ];
-        // return [
-        //     'id' => $this->id,
-        //     'name' => $this->name,
-        //     'surname' => $this->surname,
-        //     'email' => $this->email,
-        //     'password' => $this->password
-        // ];
-
-        // return [];
-
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'surname' => $this->surname,
+            'email' => $this->email,
+            'isAdmin' => $this->isAdmin
+        ];
     }
 }

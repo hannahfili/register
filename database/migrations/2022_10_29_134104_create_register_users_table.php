@@ -19,10 +19,8 @@ class CreateRegisterUsersTable extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('password');
-            
+            $table->boolean('isAdmin')->default(0);
             $table->timestamps();
-
-
         });
     }
 

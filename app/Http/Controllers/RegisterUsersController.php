@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RegisterUser;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Subject;
 
 use App\Http\Resources\RegisterUserResource;
 use App\Http\Resources\RegisterUserCollection;
@@ -38,7 +39,8 @@ class RegisterUsersController extends Controller
             'name' => 'required|string|max:199',
             'surname' => 'required|string|max:199',
             'email' => 'required|email|unique:register_users,email',
-            'password' => 'required'
+            'password' => 'required',
+            'isAdmin' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -66,7 +68,8 @@ class RegisterUsersController extends Controller
             'name' => $request->name,
             'surname' => $request->surname,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'isAdmin' => $request->isAdmin
         ]);
 
         if ($request->isTeacher == true) {
@@ -117,23 +120,46 @@ class RegisterUsersController extends Controller
         }
 
         if ($request->has('name')) {
+            $validator = Validator::make($request->all(), [
+                'name' => 'string|max:199'
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
             $userToUpdate->name = $request->name;
         }
         if ($request->has('surname')) {
+            $validator = Validator::make($request->all(), [
+                'surname' => 'string|max:199'
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
             $userToUpdate->surname = $request->surname;
         }
         if ($request->has('email')) {
+            $validator = Validator::make($request->all(), [
+                'email' => 'email'
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
             $userWithEmail = RegisterUser::where('email', $request->email)->first();
             if ($userWithEmail === null) {
                 $userToUpdate->email = $request->email;
-                // return response($userWithEmail, 200);
             } else {
-                return response('Email already exists', 400);
-                // return response($userWithEmail, 200);
+                if ($userWithEmail->id === $id) {
+                    return response('New email has to be different than already existing', 400);
+                } else {
+                    return response('Email already exists', 400);
+                }
             }
         }
         if ($request->has('password')) {
             $userToUpdate->password = Hash::make($request->password);
+        }
+        if ($request->has('isAdmin')) {
+            $userToUpdate->isAdmin = $request->isAdmin;
         }
         $userToUpdate->save();
 
@@ -170,6 +196,11 @@ class RegisterUsersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (RegisterUser::where('id', $id)->exists()) {
+            $userToDelete = RegisterUser::find($id);
+            $userToDelete->delete();
+            return response('RegisterUser deleted', 200);
+        }
+        return response('User with given id is not found', 400);
     }
 }
