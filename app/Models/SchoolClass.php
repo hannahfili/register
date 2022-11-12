@@ -19,6 +19,10 @@ class SchoolClass extends Model
     {
         return $this->belongsToMany(Subject::class);
     }
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
     protected $fillable = [
         'name', 'class_start', 'class_end'
     ];

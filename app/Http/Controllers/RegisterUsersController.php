@@ -55,14 +55,14 @@ class RegisterUsersController extends Controller
                 return response($validator->errors(), 400);
             }
         }
-        if ($request->isStudent == true) {
-            $validator = Validator::make($request->all(), [
-                'class_id' => 'required'
-            ]);
-            if ($validator->fails()) {
-                return response($validator->errors(), 400);
-            }
-        }
+        // if ($request->isStudent == true) {
+        // $validator = Validator::make($request->all(), [
+        //     'class_id' => 'required'
+        // ]);
+        // if ($validator->fails()) {
+        //     return response($validator->errors(), 400);
+        // }
+        // }
 
         $newUser = RegisterUser::create([
             'name' => $request->name,

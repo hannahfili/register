@@ -10,11 +10,15 @@ class Student extends Model
     use HasFactory;
     public function registerUser()
     {
-        return $this->haOne(RegisterUser::class);
+        return $this->hasOne(RegisterUser::class);
     }
     public function marks()
     {
         return $this->hasMany(Mark::class);
+    }
+    public function schoolClass()
+    {
+        return $this->belongsTo(SchoolClass::class);
     }
     protected $fillable = [
         'user_id', 'class_id'

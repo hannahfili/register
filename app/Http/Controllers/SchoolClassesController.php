@@ -124,25 +124,36 @@ class SchoolClassesController extends Controller
     /**
      * Update the specified resource in storage.
      * @param  int  $classId
-     * @param  int  $userId
+     * @param  int  $studentId
      * @return \Illuminate\Http\Response
      */
-    public function addStudent($classId, $userId)
+    public function assignStudent($classId, $studentId)
     {
-        if (RegisterUser::where('id', $userId)->exists()) {
-            $user = RegisterUser::find($userId);
+        if (Student::where('id', $studentId)->exists()) {
+            $student = Student::find($studentId);
         } else {
-            return response("User with given id doesn't exist", 400);
+            return response("Student with given id doesn't exist", 400);
         }
         if (SchoolClass::where('id', $classId)->exists()) {
-            $class = SchoolClass::find($userId);
+            $class = SchoolClass::find($classId);
         } else {
             return response("Class with given id doesn't exist", 400);
         }
-        $newStudent = Student::create([
-            'user_id' => $user->id,
-            'class_id' => $class->id
-        ]);
-        // return response('User' + $user->email 'became a student with id: {$newStudet->id} and added to class: {$class.name}');
+        // $newStudent = Student::create([
+        //     'user_id' => $user->id,
+        //     'class_id' => $class->id
+        // ]);
+
+        // $classToUpdate = SchoolClass::find($id);
+
+        if ($student && $class) {
+            $student->class_id = $class->id;
+            $student->save();
+
+            // $class->students()->save($student);
+        }
+        $message = 'Student %s %s added to class: %s';
+        $user = RegisterUser::where('id', $student->user_id)->first();
+        return response(sprintf($message, $user->name, $user->surname, $class->name), 200);
     }
 }
