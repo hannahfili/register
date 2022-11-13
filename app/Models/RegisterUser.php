@@ -18,7 +18,7 @@ class RegisterUser extends Model
         return $this->belongsTo(Student::class);
     }
     protected $fillable = [
-        'name', 'surname', 'email', 'password', 'isAdmin'
+        'name', 'surname', 'email', 'password', 'isAdmin', 'api_token'
 
     ];
 }

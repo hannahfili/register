@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\RegisterUser;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Subject;
-
+use App\Helpers\Helper;
+use App\Helpers\Access;
 use App\Http\Resources\RegisterUserResource;
 use App\Http\Resources\RegisterUserCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\TokenAuthResult;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -22,8 +25,22 @@ class RegisterUsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $access = new Access();
+        $access->set_adminAccess();
+        $access->set_teacherAccess();
+        // $access->set_studentAccess();
+
+
+        $isEligible = Helper::userIsEligibleForResource($request->bearerToken(), $access);
+        // $statusCode = 200;
+        if ($isEligible == TokenAuthResult::TokenNotFound) {
+            return response('Token not found', 400);
+        }
+        if (!$isEligible) {
+            return response('User is not allowed for the resource', 401);
+        }
         return RegisterUserResource::collection(RegisterUser::all());
     }
 
@@ -63,13 +80,14 @@ class RegisterUsersController extends Controller
         //     return response($validator->errors(), 400);
         // }
         // }
-
+        $token = Str::random(60);
         $newUser = RegisterUser::create([
             'name' => $request->name,
             'surname' => $request->surname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'isAdmin' => $request->isAdmin
+            'isAdmin' => $request->isAdmin,
+            'api_token' => $token,
         ]);
 
         if ($request->isTeacher == true) {
@@ -86,8 +104,9 @@ class RegisterUsersController extends Controller
         }
 
 
-        // return response()->json(['Created.', new RegisterUserResource($newUser)]);
-        return response(new RegisterUserResource($newUser), 200);
+        return response()->json(['Created.', new RegisterUserResource($newUser)]);
+        // return response(new RegisterUserResource($newUser), 200);
+        return $token;
     }
 
     /**

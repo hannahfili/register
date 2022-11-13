@@ -17,10 +17,9 @@ use App\Models\RegisterUser;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 // Route::get('users', [RegisterUsersController::class, 'getAll']);
 Route::apiResource('users', RegisterUsersController::class);
 Route::apiResource('school_classes', SchoolClassesController::class);
 Route::post('assign_student_to_class/{class_id}/{student_id}', [SchoolClassesController::class, 'assignStudent']);
+
+// Route::middleware('auth:api')->get('/users', [RegisterUsersController::class, 'index']);
