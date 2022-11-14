@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Student;
 use App\Http\Resources\StudentsCollectionResource;
 
-class SchoolClassesResource extends JsonResource
+class SclassesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +17,7 @@ class SchoolClassesResource extends JsonResource
      */
     public function toArray($request)
     {
-        $classStudents = Student::where('class_id', $this->id)->get();
+        $classStudents = Student::where('sclass_id', $this->id)->get();
         // RegisterUserResource::collection(RegisterUser::all());
         $classStudentsDTOs = StudentsCollectionResource::collection($classStudents);
         return [

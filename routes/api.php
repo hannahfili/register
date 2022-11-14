@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterUsersController;
-use App\Http\Controllers\SchoolClassesController;
+use App\Http\Controllers\SclassesController;
+use App\Http\Controllers\SubjectController;
 use App\Models\RegisterUser;
 
 /*
@@ -19,7 +20,9 @@ use App\Models\RegisterUser;
 
 // Route::get('users', [RegisterUsersController::class, 'getAll']);
 Route::apiResource('users', RegisterUsersController::class);
-Route::apiResource('school_classes', SchoolClassesController::class);
-Route::post('assign_student_to_class/{class_id}/{student_id}', [SchoolClassesController::class, 'assignStudent']);
+Route::apiResource('subjects', SubjectController::class);
+Route::apiResource('school_classes', SclassesController::class);
+Route::post('assign_student_to_class/{class_id}/{student_id}', [SclassesController::class, 'assignStudent']);
+Route::post('assign_class_to_subject/{subject_id}/{class_id}', [SubjectController::class, 'assignClass']);
 
 // Route::middleware('auth:api')->get('/users', [RegisterUsersController::class, 'index']);

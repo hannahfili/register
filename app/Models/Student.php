@@ -16,9 +16,9 @@ class Student extends Model
     {
         return $this->hasMany(Mark::class);
     }
-    public function schoolClass()
+    public function sclass()
     {
-        return $this->belongsTo(SchoolClass::class);
+        return $this->belongsTo(Sclass::class);
     }
     protected $fillable = [
         'user_id', 'class_id'

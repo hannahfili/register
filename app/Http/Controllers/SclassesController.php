@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SchoolClassesResource;
-use App\Models\SchoolClass;
+use App\Http\Resources\SclassesResource;
+use App\Models\Sclass;
 use App\Models\RegisterUser;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SchoolClassesController extends Controller
+class SclassesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class SchoolClassesController extends Controller
      */
     public function index()
     {
-        return SchoolClassesResource::collection(SchoolClass::all());
+        return SclassesResource::collection(Sclass::all());
     }
 
     /**
@@ -38,12 +38,12 @@ class SchoolClassesController extends Controller
         if ($validator->fails()) {
             return response($validator->errors(), 400);
         }
-        $newClass = SchoolClass::create([
+        $newClass = Sclass::create([
             'name' => $request->name,
             'class_start' => $request->class_start,
             'class_end' => $request->class_end
         ]);
-        return response(new SchoolClassesResource($newClass), 200);
+        return response(new SclassesResource($newClass), 200);
     }
 
     /**
@@ -52,9 +52,9 @@ class SchoolClassesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(SchoolClass $schoolClass)
+    public function show(Sclass $schoolClass)
     {
-        return new SchoolClassesResource($schoolClass);
+        return new SclassesResource($schoolClass);
     }
 
     /**
@@ -69,8 +69,8 @@ class SchoolClassesController extends Controller
         if (count($request->all()) == 0) {
             return response('Nothing data given to update', 400);
         }
-        if (SchoolClass::where('id', $id)->exists()) {
-            $classToUpdate = SchoolClass::find($id);
+        if (Sclass::where('id', $id)->exists()) {
+            $classToUpdate = Sclass::find($id);
         } else {
             return response("SchoolClass with given id doesn't exist", 400);
         }
@@ -103,7 +103,7 @@ class SchoolClassesController extends Controller
             $classToUpdate->class_end = $request->class_end;
         }
         $classToUpdate->save();
-        return response(new SchoolClassesResource($classToUpdate), 201);
+        return response(new SclassesResource($classToUpdate), 201);
     }
 
     /**
@@ -114,8 +114,8 @@ class SchoolClassesController extends Controller
      */
     public function destroy($id)
     {
-        if (SchoolClass::where('id', $id)->exists()) {
-            $classToDelete = SchoolClass::find($id);
+        if (Sclass::where('id', $id)->exists()) {
+            $classToDelete = Sclass::find($id);
             $classToDelete->delete();
             return response('SchoolClass deleted', 200);
         }
@@ -134,17 +134,11 @@ class SchoolClassesController extends Controller
         } else {
             return response("Student with given id doesn't exist", 400);
         }
-        if (SchoolClass::where('id', $classId)->exists()) {
-            $class = SchoolClass::find($classId);
+        if (Sclass::where('id', $classId)->exists()) {
+            $class = Sclass::find($classId);
         } else {
             return response("Class with given id doesn't exist", 400);
         }
-        // $newStudent = Student::create([
-        //     'user_id' => $user->id,
-        //     'class_id' => $class->id
-        // ]);
-
-        // $classToUpdate = SchoolClass::find($id);
 
         if ($student && $class) {
             $student->class_id = $class->id;

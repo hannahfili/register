@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Mockery\Matcher\Subset;
 
-class SchoolClass extends Model
+class Sclass extends Model
 {
     use HasFactory;
 

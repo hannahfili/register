@@ -17,9 +17,9 @@ class Teacher extends Model
     {
         return $this->hasMany(Mark::class);
     }
-    public function school_classes()
+    public function sclasses()
     {
-        return $this->belongsToMany(SchoolClass::class);
+        return $this->belongsToMany(Sclass::class);
     }
     public function subject()
     {
