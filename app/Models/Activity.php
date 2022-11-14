@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     use HasFactory;
-    public function marks(){
+    public function marks()
+    {
         return $this->hasMany(Mark::class);
     }
+    protected $fillable = [
+        'name', 'conversion_factor'
+    ];
 }
