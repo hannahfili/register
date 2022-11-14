@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Mark;
 
-class Mark_modificationsController extends Controller
+use Illuminate\Support\Facades\Validator;
+
+class MarksController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -12,16 +16,6 @@ class Mark_modificationsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //return all!
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -34,7 +28,27 @@ class Mark_modificationsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'user_student_id' => 'required|exists:students,user_id',
+            'subject_id' => 'required|exists:subjects,id',
+            'user_teacher_id' => 'required|exists:teachers,user_id',
+            'activity_id' => 'required|exists:activities,id',
+            'value' => 'required|numeric|between:1,5'
+        ]);
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
+        }
+        $mark_datetime = Carbon::now();
+
+        $newMark = Mark::create([
+            'user_student_id' => $request->user_student_id,
+            'subject_id' => $request->subject_id,
+            'user_teacher_id' => $request->user_teacher_id,
+            'activity_id' => $request->activity_id,
+            'mark_datetime' => $mark_datetime,
+            'value' => $request->value
+        ]);
+        return response($newMark, 200);
     }
 
     /**

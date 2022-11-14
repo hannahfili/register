@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\MarksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterUsersController;
@@ -22,6 +24,8 @@ use App\Models\RegisterUser;
 Route::apiResource('users', RegisterUsersController::class);
 Route::apiResource('subjects', SubjectController::class);
 Route::apiResource('school_classes', SclassesController::class);
+Route::apiResource('activities', ActivityController::class);
+Route::apiResource('marks', MarksController::class);
 Route::post('assign_student_to_class/{class_id}/{student_id}', [SclassesController::class, 'assignStudent']);
 Route::post('assign_class_to_subject/{subject_id}/{class_id}', [SubjectController::class, 'assignClass']);
 Route::post('assign_teacher_to_subject/{subject_id}/{teacher_id}', [SubjectController::class, 'assignTeacher']);

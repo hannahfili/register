@@ -12,13 +12,25 @@ class Mark extends Model
     {
         return $this->belongsTo(Subject::class);
     }
-    public function student(){
+    public function student()
+    {
         return $this->belongsTo(Student::class);
     }
-    public function teacher(){
+    public function teacher()
+    {
         return $this->belongsTo(Teacher::class);
     }
-    public function activity(){
+    public function activity()
+    {
         return $this->belongsTo(Activity::class);
     }
+    public function mark_modifications()
+    {
+        return $this->hasMany(Mark_modification::class);
+    }
+    protected $fillable = [
+        'user_student_id', 'subject_id', 'user_teacher_id',
+        'activity_id', 'mark_datetime',
+        'value'
+    ];
 }
