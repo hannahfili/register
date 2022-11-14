@@ -150,4 +150,19 @@ class SclassesController extends Controller
         $user = RegisterUser::where('id', $student->user_id)->first();
         return response(sprintf($message, $user->name, $user->surname, $class->name), 200);
     }
+    /**
+     * Update the specified resource in storage.
+     * @param  int  $classId
+     * @return \Illuminate\Http\Response
+     */
+    public function displaySubjectsAssignedToClass($classId)
+    {
+        if (!Sclass::where('id', $classId)->exists()) {
+            return response("SchoolClass with given id doesn't exist", 400);
+        }
+        $class = Sclass::where('id', $classId)->first();
+        // $subjects=$class->subjects;
+
+        return response($class->subjects, 200);
+    }
 }

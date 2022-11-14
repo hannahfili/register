@@ -25,5 +25,6 @@ Route::apiResource('school_classes', SclassesController::class);
 Route::post('assign_student_to_class/{class_id}/{student_id}', [SclassesController::class, 'assignStudent']);
 Route::post('assign_class_to_subject/{subject_id}/{class_id}', [SubjectController::class, 'assignClass']);
 Route::post('assign_teacher_to_subject/{subject_id}/{teacher_id}', [SubjectController::class, 'assignTeacher']);
+Route::get('display_subjects_assigned_to_class/{class_id}', [SclassesController::class, 'displaySubjectsAssignedToClass']);
 
 // Route::middleware('auth:api')->get('/users', [RegisterUsersController::class, 'index']);
