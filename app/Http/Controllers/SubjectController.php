@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Subject;
 use App\Models\SclassesSubjects;
+use App\Models\Teacher;
 
 class SubjectController extends Controller
 {
@@ -64,6 +65,25 @@ class SubjectController extends Controller
 
         $subject->sclasses()->attach($class);
         return response('Class assigned properly', 200);
+    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  int  $subjectId
+     * @param  int  $teacherId
+     * @return \Illuminate\Http\Response
+     */
+    public function assignTeacher($subjectId, $teacherId)
+    {
+        if (!Subject::where('id', $subjectId)->exists()) return response("Subject with given id doesn't exist", 400);
+        if (!Teacher::where('id', $teacherId)->exists()) return response("Teacher with given id doesn't exist", 400);
+        $subject = Subject::where('id', $subjectId)->first();
+        $teacher = Teacher::where('id', $teacherId)->first();
+
+        $teacher->subject_id = $subject->id;
+        $teacher->save();
+
+        return response('Teacher assigned properly', 200);
     }
 
     /**

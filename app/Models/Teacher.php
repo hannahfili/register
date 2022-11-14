@@ -11,7 +11,7 @@ class Teacher extends Model
 
     public function registerUser()
     {
-        return $this->haOne(RegisterUser::class);
+        return $this->hasOne(RegisterUser::class);
     }
     public function marks()
     {
@@ -23,7 +23,7 @@ class Teacher extends Model
     }
     public function subject()
     {
-        return $this->belongsTo(Subject::class);
+        return $this->hasOne(Subject::class);
     }
     protected $fillable = [
         'user_id', 'subject_id'

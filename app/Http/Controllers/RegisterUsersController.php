@@ -64,14 +64,14 @@ class RegisterUsersController extends Controller
             return response($validator->errors(), 400);
         }
 
-        if ($request->isTeacher == true) {
-            $validator = Validator::make($request->all(), [
-                'subject_id' => 'required'
-            ]);
-            if ($validator->fails()) {
-                return response($validator->errors(), 400);
-            }
-        }
+        // if ($request->isTeacher == true) {
+        //     $validator = Validator::make($request->all(), [
+        //         'subject_id' => 'required'
+        //     ]);
+        //     if ($validator->fails()) {
+        //         return response($validator->errors(), 400);
+        //     }
+        // }
         // if ($request->isStudent == true) {
         // $validator = Validator::make($request->all(), [
         //     'class_id' => 'required'
@@ -93,18 +93,18 @@ class RegisterUsersController extends Controller
         if ($request->isTeacher == true) {
             $newTeacher = Teacher::create([
                 'user_id' => $newUser->id,
-                'subject_id' => $request->subject_id
+                // 'subject_id' => $request->subject_id
             ]);
         }
         if ($request->isStudent == true) {
             $newStudent = Student::create([
                 'user_id' => $newUser->id,
-                'class_id' => $request->class_id
+                // 'class_id' => $request->class_id
             ]);
         }
 
 
-        return response()->json(['Created.', new RegisterUserResource($newUser)]);
+        return response(new RegisterUserResource($newUser), 200);
         // return response(new RegisterUserResource($newUser), 200);
         return $token;
     }

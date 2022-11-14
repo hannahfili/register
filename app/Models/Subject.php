@@ -18,9 +18,9 @@ class Subject extends Model
     {
         return $this->belongsToMany(Sclass::class);
     }
-    public function teachers()
+    public function teacher()
     {
-        return $this->hasMany(Teacher::class);
+        return $this->belongsTo(Teacher::class);
     }
     protected $fillable = [
         'name', 'description'
