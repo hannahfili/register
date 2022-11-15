@@ -17,4 +17,9 @@ class Mark_modification extends Model
     {
         $this->belongsTo(Mark::class);
     }
+    protected $fillable = [
+        'modification_datetime', 'moderator_id', 'mark_id',
+        'mark_before_modification', 'mark_after_modification',
+        'modification_reason'
+    ];
 }

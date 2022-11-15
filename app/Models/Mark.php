@@ -16,9 +16,9 @@ class Mark extends Model
     {
         return $this->belongsTo(Student::class);
     }
-    public function teacher()
+    public function registerUser()
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(RegisterUser::class);
     }
     public function activity()
     {
@@ -29,7 +29,7 @@ class Mark extends Model
         return $this->hasMany(Mark_modification::class);
     }
     protected $fillable = [
-        'user_student_id', 'subject_id', 'user_teacher_id',
+        'user_student_id', 'subject_id', 'moderator_id',
         'activity_id', 'mark_datetime',
         'value'
     ];

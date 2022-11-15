@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MarksResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Mark;
-
+use App\Models\Mark_modification;
+use App\Models\Teacher;
+use App\Models\RegisterUser;
 use Illuminate\Support\Facades\Validator;
 
 class MarksController extends Controller
@@ -17,7 +20,7 @@ class MarksController extends Controller
      */
     public function index()
     {
-        //
+        return MarksResource::collection(Mark::all());
     }
 
     /**
@@ -31,7 +34,7 @@ class MarksController extends Controller
         $validator = Validator::make($request->all(), [
             'user_student_id' => 'required|exists:students,user_id',
             'subject_id' => 'required|exists:subjects,id',
-            'user_teacher_id' => 'required|exists:teachers,user_id',
+            'moderator_id' => 'required|exists:register_users,id',
             'activity_id' => 'required|exists:activities,id',
             'value' => 'required|numeric|between:1,5'
         ]);
@@ -40,13 +43,30 @@ class MarksController extends Controller
         }
         $mark_datetime = Carbon::now();
 
+        $moderator = RegisterUser::where('id', $request->moderator_id)->first();
+        $isModeratorTeacher = Teacher::where('user_id', $request->moderator_id)->exists();
+        $isModeratorAdmin = $moderator->isAdmin;
+
+        if (!($isModeratorAdmin || $isModeratorTeacher)) {
+            return response('[moderator_id] The user with given id is not allowed to add a mark', 401);
+        }
+
         $newMark = Mark::create([
             'user_student_id' => $request->user_student_id,
             'subject_id' => $request->subject_id,
-            'user_teacher_id' => $request->user_teacher_id,
+            'moderator_id' => $request->moderator_id,
             'activity_id' => $request->activity_id,
             'mark_datetime' => $mark_datetime,
             'value' => $request->value
+        ]);
+
+        Mark_modification::create([
+            'modification_datetime' => Carbon::now(),
+            'moderator_id' => $request->moderator_id,
+            'mark_id' => $newMark->id,
+            'mark_before_modification' => null,
+            'mark_after_modification' => $newMark->value,
+            'modification_reason' => 'dodanie oceny'
         ]);
         return response($newMark, 200);
     }
@@ -57,20 +77,9 @@ class MarksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Mark $mark)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return new MarksResource($mark);
     }
 
     /**
@@ -82,17 +91,59 @@ class MarksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'moderator_id' => 'required|exists:register_users,id',
+            'new_value' => 'required|numeric|between:0,5',
+            'modification_reason' => 'required|string|max:199'
+        ]);
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
+        }
+        if (!Mark::where('id', $id)->exists()) {
+            return response("Mark with given id doesn't exist", 400);
+        }
+
+        $markToUpdate = Mark::where('id', $id)->first();
+        $oldMarkValue = $markToUpdate->value;
+
+        $markToUpdate->value = $request->new_value;
+        $markToUpdate->save();
+
+        Mark_modification::create([
+            'modification_datetime' => Carbon::now(),
+            'moderator_id' => $request->moderator_id,
+            'mark_id' => $id,
+            'mark_before_modification' => $oldMarkValue,
+            'mark_after_modification' => $request->new_value,
+            'modification_reason' => $request->modification_reason
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
+     * @param  int  $moderator_id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, $moderator_id)
     {
-        //
+        if (!Mark::where('id', $id)->exists()) {
+            return response("Mark with given id doesn't exist", 400);
+        }
+
+        $markToDelete = Mark::find($id);
+        echo $markToDelete;
+        $markValue = $markToDelete->value;
+        $markToDelete->value = 0;
+        $markToDelete->save();
+        Mark_modification::create([
+            'modification_datetime' => Carbon::now(),
+            'moderator_id' => $moderator_id,
+            'mark_id' => $id,
+            'mark_before_modification' => $markValue,
+            'mark_after_modification' => 0,
+            'modification_reason' => "usunięcie oceny"
+        ]);
     }
 }

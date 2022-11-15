@@ -2,6 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Models\RegisterUser;
+use App\Models\Student;
+use App\Http\Resources\RegisterUserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class MarksResource extends JsonResource
@@ -14,6 +17,16 @@ class MarksResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $student = RegisterUser::where('id', $this->user_student_id)->first();
+        $moderator = RegisterUser::where('id', $this->moderator_id)->first();
+        return [
+            'id' => $this->id,
+            'student' => new RegisterUserResource($student),
+            'subject' => $this->subject,
+            'moderator' => new RegisterUserResource($moderator),
+            'activity' => $this->activity,
+            'mark_datetime' => $this->mark_datetime,
+            'value' => $this->value
+        ];
     }
 }

@@ -21,4 +21,8 @@ class RegisterUser extends Model
         'name', 'surname', 'email', 'password', 'isAdmin', 'api_token'
 
     ];
+    public function marks()
+    {
+        return $this->hasMany(Mark::class);
+    }
 }

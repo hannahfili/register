@@ -13,10 +13,6 @@ class Teacher extends Model
     {
         return $this->hasOne(RegisterUser::class);
     }
-    public function marks()
-    {
-        return $this->hasMany(Mark::class);
-    }
     public function sclasses()
     {
         return $this->belongsToMany(Sclass::class);
