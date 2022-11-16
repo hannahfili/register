@@ -9,6 +9,7 @@ use App\Models\Mark;
 use App\Models\Mark_modification;
 use App\Models\Teacher;
 use App\Models\RegisterUser;
+use App\Models\Student;
 use Illuminate\Support\Facades\Validator;
 
 class MarksController extends Controller
@@ -145,5 +146,36 @@ class MarksController extends Controller
             'mark_after_modification' => 0,
             'modification_reason' => "usunięcie oceny"
         ]);
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $studentId
+     * @return \Illuminate\Http\Response
+     */
+    public function getStudentMarks($studentId)
+    {
+        if (!Student::where('user_id', $studentId)->exists()) {
+            return response("Student with given ID doesn't exist", 400);
+        }
+        $marks = Mark::where('user_student_id', $studentId)->get();
+        return MarksResource::collection($marks);
+        // return response($marks, 200);
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $studentId
+     * @param  int  $subjectId
+     * @return \Illuminate\Http\Response
+     */
+    public function getStudentMarksOfParticularSubject($studentId, $subject_id)
+    {
+        if (!Student::where('user_id', $studentId)->exists()) {
+            return response("Student with given id doesn't exist", 400);
+        }
+        $marks = Mark::where('user_student_id', $studentId)
+            ->where('subject_id', $subject_id)->get();
+        return MarksResource::collection($marks);
     }
 }
