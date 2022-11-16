@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\MarkModificationsController;
 use App\Http\Controllers\MarksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,11 +26,17 @@ Route::apiResource('users', RegisterUsersController::class);
 Route::apiResource('subjects', SubjectController::class);
 Route::apiResource('school_classes', SclassesController::class);
 Route::apiResource('activities', ActivityController::class);
+
 Route::apiResource('marks', MarksController::class);
 Route::apiResource('marks', MarksController::class);
 Route::delete('marks/{id}/{moderator_id}', [MarksController::class, 'destroy']);
 Route::get('marks/student/{id}', [MarksController::class, 'getStudentMarks']);
 Route::get('marks/student/{studentId}/subject/{subjectId}', [MarksController::class, 'getStudentMarksOfParticularSubject']);
+
+Route::apiResource('marks_modifications', MarkModificationsController::class);
+// Route::get('marks_modifications', [MarkModificationsController::class, 'index']);
+Route::get('marks_modifications/student/{user_student_id}', [MarkModificationsController::class, 'getMarksModificationsOfParticularUserStudent']);
+
 Route::post('assign_class_to_subject/{subject_id}/{class_id}', [SubjectController::class, 'assignClass']);
 Route::post('assign_teacher_to_subject/{subject_id}/{teacher_id}', [SubjectController::class, 'assignTeacher']);
 Route::get('display_subjects_assigned_to_class/{class_id}', [SclassesController::class, 'displaySubjectsAssignedToClass']);

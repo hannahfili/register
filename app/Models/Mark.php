@@ -31,6 +31,6 @@ class Mark extends Model
     protected $fillable = [
         'user_student_id', 'subject_id', 'moderator_id',
         'activity_id', 'mark_datetime',
-        'value'
+        'value', 'modification_reason'
     ];
 }
