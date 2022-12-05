@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class RegisterUser extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
 
     public function teacher()
     {
@@ -18,7 +19,7 @@ class RegisterUser extends Model
         return $this->belongsTo(Student::class);
     }
     protected $fillable = [
-        'name', 'surname', 'email', 'password', 'isAdmin', 'api_token'
+        'name', 'surname', 'email', 'password', 'isAdmin', //'api_token'
 
     ];
     public function marks()

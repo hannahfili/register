@@ -20,7 +20,7 @@ class CreateRegisterUsersTable extends Migration
             $table->string('surname');
             $table->string('password');
             $table->boolean('isAdmin')->default(0);
-            $table->string('api_token', 60)->unique()->nullable();
+            // $table->string('api_token', 60)->unique()->nullable();
             $table->timestamps();
         });
     }

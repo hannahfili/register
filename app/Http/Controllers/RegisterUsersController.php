@@ -18,6 +18,7 @@ use App\Helpers\TokenAuthResult;
 
 use function PHPUnit\Framework\isEmpty;
 
+
 class RegisterUsersController extends Controller
 {
     /**
@@ -86,7 +87,7 @@ class RegisterUsersController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'isAdmin' => $request->isAdmin,
-            'api_token' => $token,
+            // 'api_token' => $token,
         ]);
 
         if ($request->isTeacher == true) {
@@ -101,9 +102,14 @@ class RegisterUsersController extends Controller
                 // 'class_id' => $request->class_id
             ]);
         }
+        $abilities_list = Helper::createAbilitiesList($newUser);
 
 
-        return response(new RegisterUserResource($newUser), 200);
+
+        //CREATE TOKEN PRZY LOGIN!!!!
+        $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
+
+        // return response(new RegisterUserResource($newUser), 200);
         // return response(new RegisterUserResource($newUser), 200);
         return $token;
     }
