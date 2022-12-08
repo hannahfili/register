@@ -49,7 +49,8 @@ class MarksController extends Controller
         $isModeratorAdmin = $moderator->isAdmin;
 
         if (!($isModeratorAdmin || $isModeratorTeacher)) {
-            return response('[moderator_id] The user with given id is not allowed to add a mark', 401);
+            // return response('[moderator_id] The user with given id is not allowed to add a mark', 401);
+            return response()->json(['status' => 401, 'data' => 'Użytkownikowi nie wolno dodawać ocen'], 401);
         }
 
         $newMark = Mark::create([
@@ -101,7 +102,8 @@ class MarksController extends Controller
             return response($validator->errors(), 400);
         }
         if (!Mark::where('id', $id)->exists()) {
-            return response("Mark with given id doesn't exist", 400);
+            // return response("Mark with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Ocena o podanym ID nie istnieje'], 404);
         }
 
         $markToUpdate = Mark::where('id', $id)->first();
@@ -130,7 +132,8 @@ class MarksController extends Controller
     public function destroy($id, $moderator_id)
     {
         if (!Mark::where('id', $id)->exists()) {
-            return response("Mark with given id doesn't exist", 400);
+            // return response("Mark with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Ocena o podanym ID nie istnieje'], 404);
         }
 
         $markToDelete = Mark::find($id);
@@ -156,7 +159,8 @@ class MarksController extends Controller
     public function getStudentMarks($studentId)
     {
         if (!Student::where('user_id', $studentId)->exists()) {
-            return response("Student with given ID doesn't exist", 400);
+            // return response("Student with given ID doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
         }
         $marks = Mark::where('user_student_id', $studentId)->get();
         return MarksResource::collection($marks);
@@ -172,7 +176,8 @@ class MarksController extends Controller
     public function getStudentMarksOfParticularSubject($studentId, $subject_id)
     {
         if (!Student::where('user_id', $studentId)->exists()) {
-            return response("Student with given id doesn't exist", 400);
+            // return response("Student with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
         }
         $marks = Mark::where('user_student_id', $studentId)
             ->where('subject_id', $subject_id)->get();

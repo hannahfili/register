@@ -107,11 +107,11 @@ class RegisterUsersController extends Controller
 
 
         //CREATE TOKEN PRZY LOGIN!!!!
-        $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
+        // $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
 
+        return response(new RegisterUserResource($newUser), 200);
         // return response(new RegisterUserResource($newUser), 200);
-        // return response(new RegisterUserResource($newUser), 200);
-        return $token;
+        // return $token;
     }
 
     /**
@@ -135,12 +135,14 @@ class RegisterUsersController extends Controller
     {
         // $userToUpdate = null;
         if (count($request->all()) == 0) {
-            return response('Nothing data given to update', 400);
+            // return response('Nothing data given to update', 400);
+            return response()->json(['status' => 400, 'data' => 'Nie wysłano żadnych danych'], 400);
         }
         if (RegisterUser::where('id', $id)->exists()) {
             $userToUpdate = RegisterUser::find($id);
         } else {
-            return response("User with given id doesn't exist", 400);
+            // return response("User with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
         }
 
         if ($request->has('name')) {
@@ -173,9 +175,11 @@ class RegisterUsersController extends Controller
                 $userToUpdate->email = $request->email;
             } else {
                 if ($userWithEmail->id === $id) {
-                    return response('New email has to be different than already existing', 400);
+                    return response()->json(['status' => 400, 'data' => 'New email has to be different than already existing'], 400);
+                    // return response('New email has to be different than already existing', 400);
                 } else {
-                    return response('Email already exists', 400);
+                    return response()->json(['status' => 400, 'data' => 'Email already exists'], 400);
+                    // return response('Email already exists', 400);
                 }
             }
         }
@@ -193,7 +197,8 @@ class RegisterUsersController extends Controller
                 $teacherToUpdate->subject_id = $request->subject_id;
                 $teacherToUpdate->save();
             } else {
-                return response('Teacher id not found', 400);
+                // return response('Teacher id not found', 400);
+                return response()->json(['status' => 404, 'data' => 'Nauczyciel o podanym ID nie istnieje'], 404);
             }
         }
         if ($request->isStudent == true && $request->has('class_id')) {
@@ -202,7 +207,8 @@ class RegisterUsersController extends Controller
                 $studentToUpdate->class_id = $request->class_id;
                 $studentToUpdate->save();
             } else {
-                return response('Student id not found', 400);
+                // return response('Student id not found', 400);
+                return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
             }
         }
         // echo $userToUpdate;
@@ -223,8 +229,10 @@ class RegisterUsersController extends Controller
         if (RegisterUser::where('id', $id)->exists()) {
             $userToDelete = RegisterUser::find($id);
             $userToDelete->delete();
-            return response('RegisterUser deleted', 200);
+            // return response('RegisterUser deleted', 200);
+            return response()->json(['status' => 200, 'data' => 'Użytkownik został pomyślnie usunięty'], 200);
         }
-        return response('User with given id is not found', 400);
+        // return response('User with given id is not found', 400);
+        return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
     }
 }

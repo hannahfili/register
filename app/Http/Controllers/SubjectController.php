@@ -41,7 +41,8 @@ class SubjectController extends Controller
             'name' => $request->name,
             'description' => $request->description,
         ]);
-        return response($newSubject, 200);
+        // return response($newSubject, 200);
+        return response()->json(['status' => 200, 'data' => $newSubject], 200);
     }
 
     /**
@@ -53,18 +54,20 @@ class SubjectController extends Controller
      */
     public function assignClass($subjectId, $classId)
     {
-        if (!Subject::where('id', $subjectId)->exists()) return response("Subject with given id doesn't exist", 400);
-        if (!Sclass::where('id', $classId)->exists()) return response("School class with given id doesn't exist", 400);
+        if (!Subject::where('id', $subjectId)->exists()) return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
+        if (!Sclass::where('id', $classId)->exists()) return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
         $subject = Subject::where('id', $subjectId)->first();
         $class = Sclass::where('id', $classId)->first();
 
         if ($subject->sclasses()->wherePivot('sclass_id', '=', $class->id)->exists()) {
-            return response('The class has already been assigned to the subject', 400);
+            // return response('The class has already been assigned to the subject', 400);
+            return response()->json(['status' => 400, 'data' => 'Ta klasa została już przypisana do przedmioty'], 400);
         }
 
 
         $subject->sclasses()->attach($class);
-        return response('Class assigned properly', 200);
+        // return response('Class assigned properly', 200);
+        return response()->json(['status' => 200, 'data' => 'Klasa przypisana pomyślnie do przedmiotu'], 200);
     }
     /**
      * Store a newly created resource in storage.
@@ -75,15 +78,16 @@ class SubjectController extends Controller
      */
     public function assignTeacher($subjectId, $teacherId)
     {
-        if (!Subject::where('id', $subjectId)->exists()) return response("Subject with given id doesn't exist", 400);
-        if (!Teacher::where('id', $teacherId)->exists()) return response("Teacher with given id doesn't exist", 400);
+        if (!Subject::where('id', $subjectId)->exists()) return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
+        if (!Teacher::where('id', $teacherId)->exists()) return response()->json(['status' => 404, 'data' => 'Nauczyciel o podanym ID nie istnieje'], 404);
         $subject = Subject::where('id', $subjectId)->first();
         $teacher = Teacher::where('id', $teacherId)->first();
 
         $teacher->subject_id = $subject->id;
         $teacher->save();
 
-        return response('Teacher assigned properly', 200);
+        // return response('Teacher assigned properly', 200);
+        return response()->json(['status' => 404, 'data' => 'Nauczyciel został pomyślnie przypisany do przedmiotu'], 404);
     }
 
     /**
@@ -114,12 +118,14 @@ class SubjectController extends Controller
             return response($validator->errors(), 400);
         }
         if (count($request->all()) == 0) {
-            return response('Nothing data given to update', 400);
+            // return response('Nothing data given to update', 400);
+            return response()->json(['status' => 400, 'data' => 'Nie wysłano żadnych danych'], 400);
         }
         if (Subject::where('id', $id)->exists()) {
             $subjectToUpdate = Subject::find($id);
         } else {
-            return response("Subject with given id doesn't exist", 400);
+            // return response("Subject with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
         }
         if ($request->has('name')) {
             $subjectToUpdate->name = $request->name;
@@ -141,8 +147,10 @@ class SubjectController extends Controller
         if (Subject::where('id', $id)->exists()) {
             $subjectToDelete = Subject::find($id);
             $subjectToDelete->delete();
-            return response('Subject deleted', 200);
+            // return response('Subject deleted', 200);
+            return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny usunięty pomyślnie'], 404);
         }
-        return response("Subject with given id doesn't exist", 400);
+        // return response("Subject with given id doesn't exist", 400);
+        return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
     }
 }

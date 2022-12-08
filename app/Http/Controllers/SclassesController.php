@@ -67,12 +67,14 @@ class SclassesController extends Controller
     public function update(Request $request, $id)
     {
         if (count($request->all()) == 0) {
-            return response('Nothing data given to update', 400);
+            // return response('Nothing data given to update', 400);
+            return response()->json(['status' => 400, 'data' => 'Nie wysłano żadnych danych'], 400);
         }
         if (Sclass::where('id', $id)->exists()) {
             $classToUpdate = Sclass::find($id);
         } else {
-            return response("SchoolClass with given id doesn't exist", 400);
+            // return response("SchoolClass with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
         }
 
         if ($request->has('name')) {
@@ -117,9 +119,11 @@ class SclassesController extends Controller
         if (Sclass::where('id', $id)->exists()) {
             $classToDelete = Sclass::find($id);
             $classToDelete->delete();
-            return response('SchoolClass deleted', 200);
+            // return response('SchoolClass deleted', 200);
+            return response()->json(['status' => 200, 'data' => 'Klasa usunięta pomyślnie'], 200);
         }
-        return response("SchoolClass with given id doesn't exist", 400);
+        // return response("SchoolClass with given id doesn't exist", 400);
+        return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
     }
     /**
      * Update the specified resource in storage.
@@ -132,12 +136,14 @@ class SclassesController extends Controller
         if (Student::where('id', $studentId)->exists()) {
             $student = Student::find($studentId);
         } else {
-            return response("Student with given id doesn't exist", 400);
+            // return response("Student with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
         }
         if (Sclass::where('id', $classId)->exists()) {
             $class = Sclass::find($classId);
         } else {
-            return response("Class with given id doesn't exist", 400);
+            // return response("Class with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
         }
 
         if ($student && $class) {
@@ -148,7 +154,8 @@ class SclassesController extends Controller
         }
         $message = 'Student %s %s added to class: %s';
         $user = RegisterUser::where('id', $student->user_id)->first();
-        return response(sprintf($message, $user->name, $user->surname, $class->name), 200);
+        // return response(sprintf($message, $user->name, $user->surname, $class->name), 200);
+        return response()->json(['status' => 200, 'data' => sprintf($message, $user->name, $user->surname, $class->name)], 200);
     }
     /**
      * Update the specified resource in storage.
@@ -158,11 +165,13 @@ class SclassesController extends Controller
     public function displaySubjectsAssignedToClass($classId)
     {
         if (!Sclass::where('id', $classId)->exists()) {
-            return response("SchoolClass with given id doesn't exist", 400);
+            // return response("SchoolClass with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
         }
         $class = Sclass::where('id', $classId)->first();
         // $subjects=$class->subjects;
 
-        return response($class->subjects, 200);
+        // return response($class->subjects, 200);
+        return response()->json(['status' => 200, 'data' => $class->subjects], 200);
     }
 }

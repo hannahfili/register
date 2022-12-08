@@ -34,7 +34,8 @@ class MarkModificationsController extends Controller
     public function show($id)
     {
         if (!Mark_modification::where('id', $id)->exists()) {
-            return response('', 404);
+            // return response('', 404);
+            return response()->json(['status' => 404, 'data' => 'Modyfikacja o podanym ID nie istnieje'], 404);
         }
         $modification = Mark_modification::where('id', $id)->first();
         return new MarkModificationsResource($modification);
@@ -53,7 +54,8 @@ class MarkModificationsController extends Controller
         }
         $marks = Mark::where('user_student_id', $studentId)->get();
         if ($marks->isEmpty()) {
-            return response('Neither marks nor marks modifications for this user exist', 200);
+            // return response('Neither marks nor marks modifications for this user exist', 404);
+            return response()->json(['status' => 404, 'data' => 'Wybrany uczeń nie posiada jeszcze ocen'], 404);
         }
         $modifications = new Collection();
 
