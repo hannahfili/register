@@ -174,13 +174,14 @@ class RegisterUsersController extends Controller
             if ($userWithEmail === null) {
                 $userToUpdate->email = $request->email;
             } else {
-                if ($userWithEmail->id === $id) {
-                    return response()->json(['status' => 400, 'data' => 'New email has to be different than already existing'], 400);
+                if ($userWithEmail->id != $id) {
+                    return response()->json(['status' => 400, 'data' => 'Email już istnieje'], 400);
                     // return response('New email has to be different than already existing', 400);
-                } else {
-                    return response()->json(['status' => 400, 'data' => 'Email already exists'], 400);
-                    // return response('Email already exists', 400);
                 }
+                // else {
+                //     return response()->json(['status' => 400, 'data' => 'Email already exists'], 400);
+                //     // return response('Email already exists', 400);
+                // }
             }
         }
         if ($request->has('password')) {

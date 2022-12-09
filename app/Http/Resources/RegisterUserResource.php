@@ -26,9 +26,10 @@ class RegisterUserResource extends JsonResource
                 'name' => $this->name,
                 'surname' => $this->surname,
                 'email' => $this->email,
-                'isAdmin' => $this->isAdmin,
+                'isAdmin' => (bool)$this->isAdmin,
+                'isTeacher' => false,
                 'isStudent' => true,
-                'class_id' => $student->class_id
+                // 'class_id' => $student->class_id
             ];
         }
         if (!is_null($teacher)) {
@@ -37,9 +38,9 @@ class RegisterUserResource extends JsonResource
                 'name' => $this->name,
                 'surname' => $this->surname,
                 'email' => $this->email,
-                'isAdmin' => $this->isAdmin,
+                'isAdmin' => (bool)$this->isAdmin,
                 'isTeacher' => true,
-                'subject_id' => $teacher->subject_id
+                'isStudent' => false,
             ];
         }
         return [
@@ -47,7 +48,9 @@ class RegisterUserResource extends JsonResource
             'name' => $this->name,
             'surname' => $this->surname,
             'email' => $this->email,
-            'isAdmin' => $this->isAdmin
+            'isAdmin' => (bool)$this->isAdmin,
+            'isTeacher' => false,
+            'isStudent' => false,
         ];
     }
 }
