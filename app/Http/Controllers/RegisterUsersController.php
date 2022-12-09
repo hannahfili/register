@@ -107,12 +107,13 @@ class RegisterUsersController extends Controller
 
 
         //CREATE TOKEN PRZY LOGIN!!!!
-        // $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
+        $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
 
-        return response(new RegisterUserResource($newUser), 200);
         // return response(new RegisterUserResource($newUser), 200);
-        // return $token;
+        // return response(new RegisterUserResource($newUser), 200);
+        return $token;
     }
+
 
     /**
      * Display the specified resource.
@@ -236,4 +237,22 @@ class RegisterUsersController extends Controller
         // return response('User with given id is not found', 400);
         return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
     }
+
+    // /**
+    //  * Remove the specified resource from storage.
+    //  *
+    //  * @param  int  $id
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function destroy($id)
+    // {
+    //     if (RegisterUser::where('id', $id)->exists()) {
+    //         $userToDelete = RegisterUser::find($id);
+    //         $userToDelete->delete();
+    //         // return response('RegisterUser deleted', 200);
+    //         return response()->json(['status' => 200, 'data' => 'Użytkownik został pomyślnie usunięty'], 200);
+    //     }
+    //     // return response('User with given id is not found', 400);
+    //     return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
+    // }
 }

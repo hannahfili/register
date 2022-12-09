@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Helpers\Access;
 use App\Helpers\Access\AccessType;
 use App\Helpers\Abilities;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class Helper
 {
@@ -40,7 +41,41 @@ class Helper
     //             Abilities::MARK_MODIFICATION_CRUD,
     //             Abilities::ACTIVITY_CRUD
     //         ];
+    public static function checkIfUserIsAuthorized($request, $requiredAbility)
+    {
+        if (config('global.authorization_activated')) {
+            $userIsEligible = Helper::isUserEligbleForResource($request->bearerToken(), $requiredAbility);
+            if ($userIsEligible) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+    public static function isUserEligbleForResource($token, $requiredAbility)
+    {
 
+        // $tokeny = PersonalAccessToken::all();
+        $tokenHashed = hash('sha256', $token);
+        if (!PersonalAccessToken::where('token', $tokenHashed)->exists()) {
+            return false;
+        }
+
+        // echo $tokenHashed;
+        $tokenFromDB = PersonalAccessToken::where('token', $tokenHashed)->first();
+        // $userAssignedToTokenId = $tokenFromDB->tokenable_id;
+        $userAssignedToToken = RegisterUser::where('id', $tokenFromDB->tokenable_id)->first();
+        $tokenAbilities = $tokenFromDB->abilities;
+        if (in_array($requiredAbility, $tokenAbilities)) {
+            // echo gettype($requiredAbility);
+            // echo gettype($tokenAbilities[0]);
+            // echo implode(",", gettype($tokenAbilities));
+            return true;
+        }
+        return false;
+    }
     public static function createAbilitiesList($user)
     {
         if (Helper::userIsAdmin($user)) {
