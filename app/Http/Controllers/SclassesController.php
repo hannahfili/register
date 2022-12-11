@@ -147,7 +147,7 @@ class SclassesController extends Controller
         }
 
         if ($student && $class) {
-            $student->class_id = $class->id;
+            $student->sclass_id = $class->id;
             $student->save();
 
             // $class->students()->save($student);

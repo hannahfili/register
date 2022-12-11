@@ -29,7 +29,7 @@ class RegisterUserResource extends JsonResource
                 'isAdmin' => (bool)$this->isAdmin,
                 'isTeacher' => false,
                 'isStudent' => true,
-                // 'class_id' => $student->class_id
+                'class_id' => $student->class_id
             ];
         }
         if (!is_null($teacher)) {
@@ -41,6 +41,7 @@ class RegisterUserResource extends JsonResource
                 'isAdmin' => (bool)$this->isAdmin,
                 'isTeacher' => true,
                 'isStudent' => false,
+                'subject_id' => $teacher->subject_id
             ];
         }
         return [

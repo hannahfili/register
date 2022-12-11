@@ -15,6 +15,7 @@ use App\Http\Resources\RegisterUserCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\TokenAuthResult;
+use App\Http\Resources\StudentsCollectionResource;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -238,21 +239,43 @@ class RegisterUsersController extends Controller
         return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
     }
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  *
-    //  * @param  int  $id
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function destroy($id)
-    // {
-    //     if (RegisterUser::where('id', $id)->exists()) {
-    //         $userToDelete = RegisterUser::find($id);
-    //         $userToDelete->delete();
-    //         // return response('RegisterUser deleted', 200);
-    //         return response()->json(['status' => 200, 'data' => 'Użytkownik został pomyślnie usunięty'], 200);
-    //     }
-    //     // return response('User with given id is not found', 400);
-    //     return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
-    // }
+    /**
+     * Update the specified resource in storage.
+     * @param  int  $studentId
+     * @return \Illuminate\Http\Response
+     */
+    public function dischargeStudentFromClass($studentId)
+    {
+        if (Student::where('id', $studentId)->exists()) {
+            $student = Student::find($studentId);
+        } else {
+            // return response("Student with given id doesn't exist", 400);
+            return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
+        }
+        $student->sclass_id = null;
+        $student->save();
+
+        $message = 'Uczeń %s %s został wypisany z wybranej klasy';
+        $user = RegisterUser::where('id', $student->user_id)->first();
+        return response()->json(['status' => 200, 'data' => sprintf($message, $user->name, $user->surname)], 200);
+    }
+
+    public function getStudentsNotAssignedToAnyClass()
+    {
+        $students = Student::where('sclass_id', null)->get();
+        // $teacherToUpdate = Teacher::where('user_id', $id)->first();
+        // RegisterUserResource::collection(RegisterUser::all());
+        return StudentsCollectionResource::collection($students);
+    }
+    public function getAllStudents()
+    {
+        return StudentsCollectionResource::collection(Student::all());
+    }
+    public function getTeachersNotAssignedToAnySubject()
+    {
+        $teachers = Teacher::where('subject_id', null)->get();
+        // $teacherToUpdate = Teacher::where('user_id', $id)->first();
+        // RegisterUserResource::collection(RegisterUser::all());
+        return StudentsCollectionResource::collection($teachers);
+    }
 }

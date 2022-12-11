@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SclassesResource;
 use App\Http\Resources\SubjectsResource;
 use App\Models\Sclass;
 use Illuminate\Http\Request;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Subject;
 use App\Models\SclassesSubjects;
 use App\Models\Teacher;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -148,9 +150,45 @@ class SubjectController extends Controller
             $subjectToDelete = Subject::find($id);
             $subjectToDelete->delete();
             // return response('Subject deleted', 200);
-            return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny usunięty pomyślnie'], 404);
+            return response()->json(['status' => 200, 'data' => 'Przedmiot szkolny usunięty pomyślnie'], 200);
         }
         // return response("Subject with given id doesn't exist", 400);
         return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function displayClassesAssignedToThisSubject($id)
+    {
+
+        if (Subject::where('id', $id)->exists()) {
+            $classes = Subject::find($id)->sclasses()->get();
+            // return response('Subject deleted', 200);
+            return response()->json(['status' => 200, 'data' => SclassesResource::collection(($classes))], 200);
+        }
+        // return response("Subject with given id doesn't exist", 400);
+        return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function displayClassesNotAssignedToThisSubject($id)
+    {
+        $all_classes = Sclass::all();
+        $not_assigned_classes = array();
+
+        foreach ($all_classes as $school_class) {
+            if (count($school_class->subjects()->where('subject_id', $id)->get()->toArray()) == 0) {
+                array_push($not_assigned_classes, $school_class);
+            }
+        }
+        return response()->json(['status' => 200, 'data' => SclassesResource::collection(($not_assigned_classes))], 200);
     }
 }

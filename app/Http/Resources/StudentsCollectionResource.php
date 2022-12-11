@@ -20,7 +20,8 @@ class StudentsCollectionResource extends JsonResource
         $userDataDTO = new RegisterUserResource($userData);
         return [
             'id' => $this->id,
-            'user' => $userDataDTO
+            'user' => $userDataDTO,
+            'class' => $this->sclass_id
         ];
     }
 }

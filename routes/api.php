@@ -40,5 +40,15 @@ Route::get('marks_modifications/student/{user_student_id}', [MarkModificationsCo
 Route::post('assign_class_to_subject/{subject_id}/{class_id}', [SubjectController::class, 'assignClass']);
 Route::post('assign_teacher_to_subject/{subject_id}/{teacher_id}', [SubjectController::class, 'assignTeacher']);
 Route::get('display_subjects_assigned_to_class/{class_id}', [SclassesController::class, 'displaySubjectsAssignedToClass']);
+Route::post('assign_student_to_class/{class_id}/{student_id}', [SclassesController::class, 'assignStudent']);
+Route::post('discharge_student_from_class/{student_id}', [RegisterUsersController::class, 'dischargeStudentFromClass']);
 
+Route::get('students/getAll', [RegisterUsersController::class, 'getAllStudents']);
+Route::get('students/not_assigned', [RegisterUsersController::class, 'getStudentsNotAssignedToAnyClass']);
 // Route::middleware('auth:api')->get('/users', [RegisterUsersController::class, 'index']);
+
+Route::get('subject/{subject_id}/classes', [SubjectController::class, 'displayClassesAssignedToThisSubject']);
+Route::get('subject/{subject_id}/not_assigned_classes', [SubjectController::class, 'displayClassesNotAssignedToThisSubject']);
+
+
+Route::get('teachers/not_assigned_to_any_subject', [RegisterUsersController::class, 'getTeachersNotAssignedToAnySubject']);
