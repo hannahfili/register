@@ -54,7 +54,7 @@ class SubjectController extends Controller
      * @param  int  $classId
      * @return \Illuminate\Http\Response
      */
-    public function assignClass($subjectId, $classId)
+    public function assignClassToSubject($classId, $subjectId)
     {
         if (!Subject::where('id', $subjectId)->exists()) return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
         if (!Sclass::where('id', $classId)->exists()) return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
@@ -89,7 +89,7 @@ class SubjectController extends Controller
         $teacher->save();
 
         // return response('Teacher assigned properly', 200);
-        return response()->json(['status' => 404, 'data' => 'Nauczyciel został pomyślnie przypisany do przedmiotu'], 404);
+        return response()->json(['status' => 200, 'data' => 'Nauczyciel został pomyślnie przypisany do przedmiotu'], 200);
     }
 
     /**
@@ -157,7 +157,6 @@ class SubjectController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -174,7 +173,6 @@ class SubjectController extends Controller
         return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
     }
     /**
-     * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -183,6 +181,9 @@ class SubjectController extends Controller
     {
         $all_classes = Sclass::all();
         $not_assigned_classes = array();
+        if (!Subject::where('id', $id)->exists()) {
+            return response()->json(['status' => 400, 'data' => 'Przedmiot o podanym ID nie istnieje'], 400);
+        }
 
         foreach ($all_classes as $school_class) {
             if (count($school_class->subjects()->where('subject_id', $id)->get()->toArray()) == 0) {
@@ -190,5 +191,24 @@ class SubjectController extends Controller
             }
         }
         return response()->json(['status' => 200, 'data' => SclassesResource::collection(($not_assigned_classes))], 200);
+    }
+    /**
+     *
+     * @param  int  $subjectId
+     * @param  int  $classId
+     * @return \Illuminate\Http\Response
+     */
+    public function dischargeClassFromSubject($subjectId, $classId)
+    {
+        if (DB::table('sclass_subject')
+            ->where('subject_id', $subjectId)
+            ->where('sclass_id', $classId)->exists()
+        ) {
+            $class_subject_record = DB::table('sclass_subject')
+                ->where('subject_id', $subjectId)
+                ->where('sclass_id', $classId)->delete();
+            return response()->json(['status' => 200, 'data' => 'Klasa odpięta od przedmiotu pomyślnie!'], 200);
+        }
+        return response()->json(['status' => 400, 'data' => 'Nie istnieje powiązanie między wybraną klasą i przedmiotem'], 400);
     }
 }

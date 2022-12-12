@@ -112,7 +112,7 @@ class RegisterUsersController extends Controller
 
         // return response(new RegisterUserResource($newUser), 200);
         // return response(new RegisterUserResource($newUser), 200);
-        return $token;
+        return response()->json(['status' => 200, 'data' => $token], 200);
     }
 
 
@@ -277,5 +277,10 @@ class RegisterUsersController extends Controller
         // $teacherToUpdate = Teacher::where('user_id', $id)->first();
         // RegisterUserResource::collection(RegisterUser::all());
         return StudentsCollectionResource::collection($teachers);
+    }
+    public function getTeacherAssignedToThisSubject($subject_id)
+    {
+        $teacher = Teacher::where('subject_id', $subject_id)->first();
+        return new StudentsCollectionResource($teacher);
     }
 }

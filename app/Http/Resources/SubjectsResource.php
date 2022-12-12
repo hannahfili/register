@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\RegisterUser;
+use App\Models\Teacher;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SubjectsResource extends JsonResource
@@ -16,12 +18,18 @@ class SubjectsResource extends JsonResource
     {
 
         $subjectClasses = $this->sclasses;
-        // echo $subjectClasses;
+        if (Teacher::where('subject_id', $this->id)->exists()) {
+            $teacher = Teacher::where('subject_id', $this->id)->first();
+            $teacherUser = RegisterUser::where('id', $teacher->user_id)->first();
+        } else {
+            $teacherUser = null;
+        }
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'sclasses' => $subjectClasses
+            'sclasses' => $subjectClasses,
+            'teacherUser' => new RegisterUserResource($teacherUser)
         ];
     }
     // public function toArray($request)

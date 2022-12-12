@@ -20,6 +20,9 @@ class RegisterUserResource extends JsonResource
         $student = Student::where('user_id', $this->id)->first();
         // echo $teacher;
         // echo $student;
+        if (is_null($this)) {
+            return null;
+        }
         if (!is_null($student)) {
             return [
                 'id' => $this->id,
