@@ -15,7 +15,10 @@ use App\Http\Resources\RegisterUserCollection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\TokenAuthResult;
+use App\Http\Resources\SclassesResource;
 use App\Http\Resources\StudentsCollectionResource;
+use App\Http\Resources\SubjectsResource;
+use App\Models\Sclass;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -282,5 +285,31 @@ class RegisterUsersController extends Controller
     {
         $teacher = Teacher::where('subject_id', $subject_id)->first();
         return new StudentsCollectionResource($teacher);
+    }
+    public function getSubjectAssignedToThisTeacher($teacher_id)
+    {
+        if (Teacher::where('id', $teacher_id)->exists()) {
+
+            $teacher = Teacher::where('id', $teacher_id)->first();
+            if ($teacher->subject_id == null) {
+                return response()->json(['status' => 404, 'data' => 'Nauczyciel nie posiada przypisanego przedmiotu'], 404);
+            }
+            $subject = Subject::where('id', $teacher->subject_id)->first();
+            return response()->json(['status' => 200, 'data' => new SubjectsResource($subject)], 200);
+        }
+    }
+    public function getSubjectsAssignedToThisStudent($student_id)
+    {
+        if (!(Student::where('id', $student_id)->exists())) {
+            return response()->json(['status' => 404, 'data' => 'Uczeń o podanym ID nie istnieje'], 404);
+        }
+        $student = Student::where('id', $student_id)->first();
+        $student_class_id = $student->sclass_id;
+        if ($student_class_id == null) {
+            return response()->json(['status' => 404, 'data' => 'Uczeń o podanym ID nie jest przypisany do żadnej klasy'], 404);
+        }
+        $school_class = Sclass::where('id', $student_class_id)->first();
+        $school_class_subjects = $school_class->subjects()->get();
+        return response()->json(['status' => 200, 'data' => SubjectsResource::collection($school_class_subjects)], 200);
     }
 }

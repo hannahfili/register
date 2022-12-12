@@ -32,6 +32,7 @@ Route::apiResource('marks', MarksController::class);
 Route::delete('marks/{id}/{moderator_id}', [MarksController::class, 'destroy']);
 Route::get('marks/student/{id}', [MarksController::class, 'getStudentMarks']);
 Route::get('marks/student/{studentId}/subject/{subjectId}', [MarksController::class, 'getStudentMarksOfParticularSubject']);
+Route::get('student/{student_id}/assigned_subjects', [RegisterUsersController::class, 'getSubjectsAssignedToThisStudent']);
 
 Route::apiResource('marks_modifications', MarkModificationsController::class);
 // Route::get('marks_modifications', [MarkModificationsController::class, 'index']);
@@ -56,3 +57,5 @@ Route::get('teachers/not_assigned_to_any_subject', [RegisterUsersController::cla
 Route::get('subject/{subject_id}/assigned_teacher', [RegisterUsersController::class, 'getTeacherAssignedToThisSubject']);
 
 Route::post('subject/{subject_id}/discharge_class/{class_id}', [SubjectController::class, 'dischargeClassFromSubject']);
+
+Route::get('/teacher/{teacher_id}/get_subject_assigned', [RegisterUsersController::class, 'getSubjectAssignedToThisTeacher']);
