@@ -9,6 +9,7 @@ use App\Http\Controllers\RegisterUsersController;
 use App\Http\Controllers\SclassesController;
 use App\Http\Controllers\SubjectController;
 use App\Models\RegisterUser;
+use App\Models\Sclass;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,3 +60,10 @@ Route::get('subject/{subject_id}/assigned_teacher', [RegisterUsersController::cl
 Route::post('subject/{subject_id}/discharge_class/{class_id}', [SubjectController::class, 'dischargeClassFromSubject']);
 
 Route::get('/teacher/{teacher_id}/get_subject_assigned', [RegisterUsersController::class, 'getSubjectAssignedToThisTeacher']);
+
+Route::post('/login', [RegisterUsersController::class, 'logIn']);
+Route::post('/user_assigned_to_token', [RegisterUsersController::class, 'getUserAssignedToToken']);
+
+//TODO
+//getClassesAssignedToTeacher
+Route::get('/teacher/{teacherId}/get_classes', [SclassesController::class, 'getClassesAssignedToThisTeacher']);

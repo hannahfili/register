@@ -8,6 +8,7 @@ use App\Models\RegisterUser;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class SclassesController extends Controller
 {
@@ -173,5 +174,11 @@ class SclassesController extends Controller
 
         // return response($class->subjects, 200);
         return response()->json(['status' => 200, 'data' => $class->subjects], 200);
+    }
+    public function getClassesAssignedToThisTeacher($teacherId)
+    {
+        $schoolClasses = DB::table('sclass_subject')->join('teachers', 'teachers.subject_id', '=', 'sclass_subject.subject_id')->get();
+
+        return response()->json(['status' => 200, 'data' => $schoolClasses], 200);
     }
 }

@@ -19,12 +19,50 @@ use App\Http\Resources\SclassesResource;
 use App\Http\Resources\StudentsCollectionResource;
 use App\Http\Resources\SubjectsResource;
 use App\Models\Sclass;
+use Laravel\Sanctum\PersonalAccessToken;
 
 use function PHPUnit\Framework\isEmpty;
 
 
 class RegisterUsersController extends Controller
 {
+    public function logIn(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
+        }
+        if (!RegisterUser::where('email', $request->email)->exists()) {
+            return response()->json(['status' => 404, 'data' => "Użytkownik o podanym adresie email nie istnieje"], 404);
+        }
+        // $password_hashed = hash('sha256', $request->password);
+        $hashed_password = hash('sha256', $request->password);
+        $userFromDB = RegisterUser::where('email', $request->email)->first();
+        $abilities_list = Helper::createAbilitiesList($userFromDB);
+        if ($userFromDB->password == $hashed_password) {
+            $token = $userFromDB->createToken($userFromDB->email, $abilities_list)->plainTextToken;
+            return response()->json(['status' => 200, 'data' => $token], 200);
+        } else {
+            return response()->json(['status' => 400, 'data' => 'Błędne hasło'], 400);
+        }
+    }
+
+    public function getUserAssignedToToken(Request $request)
+    {
+        $token = $request->token;
+        $tokenHashed = hash('sha256', $token);
+        $tokenFromDB = PersonalAccessToken::where('token', $tokenHashed)->first();
+        if ($tokenFromDB == null) {
+            return response()->json(['status' => 400, 'data' => 'Do wysłanego tokena nie jest przypisany żaden użytkownik'], 400);
+        }
+        $userAssignedToToken = RegisterUser::where('id', $tokenFromDB->tokenable_id)->first();
+        return new RegisterUserResource($userAssignedToToken);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -32,19 +70,6 @@ class RegisterUsersController extends Controller
      */
     public function index(Request $request)
     {
-        // $access = new Access();
-        // $access->set_adminAccess();
-        // $access->set_teacherAccess();
-        // // $access->set_studentAccess();
-
-
-        // $isEligible = Helper::userIsEligibleForResource($request->bearerToken(), $access);
-        // if ($isEligible == TokenAuthResult::TokenNotFound) {
-        //     return response('Token not found', 400);
-        // }
-        // if (!$isEligible) {
-        //     return response('User is not allowed for the resource', 401);
-        // }
         return RegisterUserResource::collection(RegisterUser::all());
     }
 
@@ -84,14 +109,13 @@ class RegisterUsersController extends Controller
         //     return response($validator->errors(), 400);
         // }
         // }
-        $token = Str::random(60);
+        $password_hashed = hash('sha256', $request->password);
         $newUser = RegisterUser::create([
             'name' => $request->name,
             'surname' => $request->surname,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'isAdmin' => $request->isAdmin,
-            // 'api_token' => $token,
+            'password' => $password_hashed,
+            'isAdmin' => $request->isAdmin
         ]);
 
         if ($request->isTeacher == true) {
@@ -127,6 +151,9 @@ class RegisterUsersController extends Controller
      */
     public function show(RegisterUser $user)
     {
+        // if (!RegisterUser::where('id', $user)->exists()) {
+        //     return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
+        // }
         return new RegisterUserResource($user);
     }
     /**
