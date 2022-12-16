@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Helpers\TokenAuthResult;
 use App\Http\Resources\SclassesResource;
 use App\Http\Resources\StudentsCollectionResource;
+use App\Http\Resources\StudentsResource;
 use App\Http\Resources\SubjectsResource;
 use App\Models\Sclass;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -57,7 +58,7 @@ class RegisterUsersController extends Controller
         $tokenHashed = hash('sha256', $token);
         $tokenFromDB = PersonalAccessToken::where('token', $tokenHashed)->first();
         if ($tokenFromDB == null) {
-            return response()->json(['status' => 400, 'data' => 'Do wysłanego tokena nie jest przypisany żaden użytkownik'], 400);
+            return response()->json(['status' => 400, 'data' => 'Do wysłanego tokenu nie jest przypisany żaden użytkownik'], 400);
         }
         $userAssignedToToken = RegisterUser::where('id', $tokenFromDB->tokenable_id)->first();
         return new RegisterUserResource($userAssignedToToken);
@@ -130,16 +131,16 @@ class RegisterUsersController extends Controller
                 // 'class_id' => $request->class_id
             ]);
         }
-        $abilities_list = Helper::createAbilitiesList($newUser);
+        // $abilities_list = Helper::createAbilitiesList($newUser);
 
 
 
         //CREATE TOKEN PRZY LOGIN!!!!
-        $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
+        // $token = $newUser->createToken($newUser->email, $abilities_list)->plainTextToken;
 
         // return response(new RegisterUserResource($newUser), 200);
         // return response(new RegisterUserResource($newUser), 200);
-        return response()->json(['status' => 200, 'data' => $token], 200);
+        return response()->json(['status' => 200, 'data' => 'Użytkownik utworzony pomyślnie'], 200);
     }
 
 
@@ -311,19 +312,22 @@ class RegisterUsersController extends Controller
     public function getTeacherAssignedToThisSubject($subject_id)
     {
         $teacher = Teacher::where('subject_id', $subject_id)->first();
+        if ($teacher == null) {
+            return response()->json(['status' => 404, 'data' => 'Do tego przedmiotu nie jest przypisany żaden nauczyciel'], 404);
+        }
         return new StudentsCollectionResource($teacher);
     }
-    public function getSubjectAssignedToThisTeacher($teacher_id)
+    public function getSubjectAssignedToThisTeacher($teacher_user_id)
     {
-        if (Teacher::where('id', $teacher_id)->exists()) {
-
-            $teacher = Teacher::where('id', $teacher_id)->first();
-            if ($teacher->subject_id == null) {
-                return response()->json(['status' => 404, 'data' => 'Nauczyciel nie posiada przypisanego przedmiotu'], 404);
-            }
-            $subject = Subject::where('id', $teacher->subject_id)->first();
-            return response()->json(['status' => 200, 'data' => new SubjectsResource($subject)], 200);
+        if (!Teacher::where('user_id', $teacher_user_id)->exists()) {
+            return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie jest nauczycielem'], 404);
         }
+        $teacher = Teacher::where('user_id', $teacher_user_id)->first();
+        if ($teacher->subject_id == null) {
+            return response()->json(['status' => 404, 'data' => 'Nauczyciel nie posiada przypisanego przedmiotu'], 404);
+        }
+        $subject = Subject::where('id', $teacher->subject_id)->first();
+        return response()->json(['status' => 200, 'data' => new SubjectsResource($subject)], 200);
     }
     public function getSubjectsAssignedToThisStudent($student_id)
     {
@@ -338,5 +342,21 @@ class RegisterUsersController extends Controller
         $school_class = Sclass::where('id', $student_class_id)->first();
         $school_class_subjects = $school_class->subjects()->get();
         return response()->json(['status' => 200, 'data' => SubjectsResource::collection($school_class_subjects)], 200);
+    }
+    public function getUserStudentId($user_id)
+    {
+        if (!(Student::where('user_id', $user_id)->exists())) {
+            return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie jest uczniem'], 404);
+        }
+        $student = Student::where('user_id', $user_id)->first();
+        return response()->json(['status' => 200, 'data' => $student->id], 200);
+    }
+    public function getUserTeacherId($user_id)
+    {
+        if (!(Teacher::where('user_id', $user_id)->exists())) {
+            return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie jest nauczycielem'], 404);
+        }
+        $teacher = Teacher::where('user_id', $user_id)->first();
+        return response()->json(['status' => 200, 'data' => $teacher->id], 200);
     }
 }

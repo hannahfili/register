@@ -90,13 +90,18 @@ class Helper
             ];
         } else if (Helper::userIsTeacher($user)) {
             return [
+                Abilities::SCHOOL_CLASS_CRUD,
+                Abilities::SUBJECT_CRUD,
                 Abilities::MARK_CRUD,
                 Abilities::MARK_READ,
-                Abilities::MARK_MODIFICATION_CRUD
+                Abilities::MARK_MODIFICATION_CRUD,
+                Abilities::SUBJECT_READ
             ];
         } else if (Helper::userIsStudent($user)) {
             return [
-                Abilities::MARK_READ
+                Abilities::MARK_READ,
+                Abilities::SUBJECT_READ,
+                Abilities::SUBJECT_CRUD
             ];
         }
     }

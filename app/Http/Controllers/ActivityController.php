@@ -15,6 +15,16 @@ use Illuminate\Support\Facades\Hash;
 
 class ActivityController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!Helper::checkIfUserIsAuthorized($request, Abilities::ACTIVITY_CRUD)) {
+                return response()->json(['status' => 401, 'data' => 'Użytkownik nie jest uprawniony do wybranego zasobu'], 401);
+            }
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -33,10 +43,6 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
-        // echo $request->bearerToken();
-        if (!Helper::checkIfUserIsAuthorized($request, Abilities::ACTIVITY_CRUD)) {
-            return response()->json(['status' => 401, 'data' => 'Użytkownik nie jest uprawniony do wybranego zasobu'], 401);
-        }
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:activities|max:199',
             'conversion_factor' => 'required|numeric|between:0.0,1.0'

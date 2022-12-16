@@ -181,4 +181,16 @@ class SclassesController extends Controller
 
         return response()->json(['status' => 200, 'data' => $schoolClasses], 200);
     }
+    public function getClassAssignedToThisStudent($student_userId)
+    {
+        if (!Student::where('user_id', $student_userId)->exists()) {
+            return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie jest uczniem'], 404);
+        }
+        $student = Student::where('user_id', $student_userId)->first();
+        if ($student->sclass_id == null) {
+            return response()->json(['status' => 404, 'data' => 'Uczeń nie jest przypisany do żadnej klasy'], 404);
+        }
+        $sclass = Sclass::where('id', $student->sclass_id)->first();
+        return response()->json(['status' => 200, 'data' => new SclassesResource($sclass)], 200);
+    }
 }
