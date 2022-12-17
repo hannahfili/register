@@ -45,7 +45,7 @@ class ActivityController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:activities|max:199',
-            'conversion_factor' => 'required|numeric|between:0.0,1.0'
+            'conversion_factor' => 'required|numeric|between:1.0,5.0'
         ]);
         if ($validator->fails()) {
             return response($validator->errors(), 400);

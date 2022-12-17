@@ -29,10 +29,11 @@ Route::apiResource('school_classes', SclassesController::class)->middleware('Sch
 Route::apiResource('activities', ActivityController::class)->middleware('ActivityCRUD');
 
 Route::apiResource('marks', MarksController::class)->middleware('MarkREAD');
-Route::delete('marks/{id}/{moderator_id}', [MarksController::class, 'destroy'])->middleware('MarkCRUD');
+Route::delete('marks/{id}/{moderator_id}', [MarksController::class, 'deleteMarkAndCreateMarkModification'])->middleware('MarkCRUD');
 Route::get('marks/student/{id}', [MarksController::class, 'getStudentMarks'])->middleware('MarkREAD');
-Route::get('marks/student/{studentId}/subject/{subjectId}', [MarksController::class, 'getStudentMarksOfParticularSubject'])->middleware('MarkREAD');
+Route::get('marks/student/{userStudentId}/subject/{subjectId}', [MarksController::class, 'getStudentMarksOfParticularSubject'])->middleware('MarkREAD');
 Route::get('student/{student_id}/assigned_subjects', [RegisterUsersController::class, 'getSubjectsAssignedToThisStudent'])->middleware('SubjectREAD');
+Route::get('marks/class/{classId}/subject/{subjectId}', [MarksController::class, 'getClassMarksOfParticularSubjectDividedByStudents']);
 
 Route::apiResource('marks_modifications', MarkModificationsController::class)->middleware('MarkModificationCRUD');
 // Route::get('marks_modifications', [MarkModificationsController::class, 'index']);
@@ -66,5 +67,5 @@ Route::post('/user_assigned_to_token', [RegisterUsersController::class, 'getUser
 Route::get('/teacher/{teacherId}/get_classes', [SclassesController::class, 'getClassesAssignedToThisTeacher']);
 Route::get('/student/{studentUserId}/get_class', [SclassesController::class, 'getClassAssignedToThisStudent']);
 
-Route::get('/user/{userId}/get_student_id',[RegisterUsersController::class, 'getUserStudentId']);
-Route::get('/user/{userId}/get_teacher_id',[RegisterUsersController::class, 'getUserTeacherId']);
+Route::get('/user/{userId}/get_student_id', [RegisterUsersController::class, 'getUserStudentId']);
+Route::get('/user/{userId}/get_teacher_id', [RegisterUsersController::class, 'getUserTeacherId']);

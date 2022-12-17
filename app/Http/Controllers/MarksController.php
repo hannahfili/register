@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MarksResource;
+use App\Http\Resources\RegisterUserResource;
+use App\Http\Resources\StudentsCollectionResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Mark;
 use App\Models\Mark_modification;
 use App\Models\Teacher;
 use App\Models\RegisterUser;
+use App\Models\Sclass;
 use App\Models\Student;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 
 class MarksController extends Controller
@@ -129,7 +133,7 @@ class MarksController extends Controller
      * @param  int  $moderator_id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id, $moderator_id)
+    public function deleteMarkAndCreateMarkModification($id, $moderator_id)
     {
         if (!Mark::where('id', $id)->exists()) {
             // return response("Mark with given id doesn't exist", 400);
@@ -137,11 +141,10 @@ class MarksController extends Controller
         }
 
         $markToDelete = Mark::find($id);
-        echo $markToDelete;
         $markValue = $markToDelete->value;
         $markToDelete->value = 0;
         $markToDelete->save();
-        Mark_modification::create([
+        $modif = Mark_modification::create([
             'modification_datetime' => Carbon::now(),
             'moderator_id' => $moderator_id,
             'mark_id' => $id,
@@ -149,6 +152,7 @@ class MarksController extends Controller
             'mark_after_modification' => 0,
             'modification_reason' => "usunięcie oceny"
         ]);
+        return response()->json(['status' => 200, 'data' => $modif], 200);
     }
     /**
      * Remove the specified resource from storage.
@@ -159,12 +163,10 @@ class MarksController extends Controller
     public function getStudentMarks($studentId)
     {
         if (!Student::where('user_id', $studentId)->exists()) {
-            // return response("Student with given ID doesn't exist", 400);
             return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
         }
-        $marks = Mark::where('user_student_id', $studentId)->get();
+        $marks = Mark::where('user_student_id', $studentId)->where('value', '<>', 0)->get();
         return MarksResource::collection($marks);
-        // return response($marks, 200);
     }
     /**
      * Remove the specified resource from storage.
@@ -173,14 +175,35 @@ class MarksController extends Controller
      * @param  int  $subjectId
      * @return \Illuminate\Http\Response
      */
-    public function getStudentMarksOfParticularSubject($studentId, $subject_id)
+    public function getStudentMarksOfParticularSubject($studentUserId, $subject_id)
     {
-        if (!Student::where('user_id', $studentId)->exists()) {
+        if (!Student::where('user_id', $studentUserId)->exists()) {
             // return response("Student with given id doesn't exist", 400);
             return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
         }
-        $marks = Mark::where('user_student_id', $studentId)
-            ->where('subject_id', $subject_id)->get();
+        $marks = Mark::where('user_student_id', $studentUserId)
+            ->where('subject_id', $subject_id)->where('value', '<>', 0)->get();
         return MarksResource::collection($marks);
+    }
+    public function getClassMarksOfParticularSubjectDividedByStudents($classId, $subjectId)
+    {
+        $marks = new Collection();
+        $school_class = Sclass::where('id', $classId)->first();
+        if ($school_class == null) {
+            return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
+        }
+        $students = Student::where('sclass_id', $school_class->id)->get();
+        foreach ($students as $s) {
+            $user = RegisterUser::where('id', $s->user_id)->first();
+            $studentMarks = Mark::where('user_student_id', $s->user_id)
+                ->where('subject_id', $subjectId)->where('value', '<>', 0)->get();
+            $studentMarks = MarksResource::collection($studentMarks);
+            $studentAndMarks = array(
+                "student" => new RegisterUserResource($user),
+                "marks" => $studentMarks
+            );
+            $marks->add($studentAndMarks);
+        }
+        return response()->json(['status' => 200, 'data' => $marks], 200);
     }
 }
