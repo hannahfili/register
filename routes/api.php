@@ -22,7 +22,6 @@ use App\Models\Sclass;
 |
 */
 
-// Route::get('users', [RegisterUsersController::class, 'getAll']);
 Route::apiResource('users', RegisterUsersController::class)->middleware('UserCRUD');
 Route::apiResource('subjects', SubjectController::class)->middleware('SubjectCRUD');
 Route::apiResource('school_classes', SclassesController::class)->middleware('SchoolClassCRUD');
@@ -63,6 +62,7 @@ Route::post('subject/{subject_id}/discharge_class/{class_id}', [SubjectControlle
 Route::get('/teacher/{teacher_user_id}/get_subject_assigned', [RegisterUsersController::class, 'getSubjectAssignedToThisTeacher']);
 
 Route::post('/login', [RegisterUsersController::class, 'logIn']);
+Route::post('/logout', [RegisterUsersController::class, 'logOut']);
 Route::post('/user_assigned_to_token', [RegisterUsersController::class, 'getUserAssignedToToken']);
 
 Route::get('/teacher/subject/{subjectId}/get_classes', [SclassesController::class, 'getClassesAssignedToThisTeacher']);

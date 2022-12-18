@@ -27,6 +27,16 @@ use function PHPUnit\Framework\isEmpty;
 
 class RegisterUsersController extends Controller
 {
+    public function logOut(Request $request)
+    {
+        $token = $request->bearerToken();
+        $tokenHashed = hash('sha256', $token);
+        if (!PersonalAccessToken::where('token', $tokenHashed)->exists()) {
+            return response()->json(['status' => 404, 'data' => 'W systemie nie ma wysłanego tokenu'], 404);
+        }
+        PersonalAccessToken::where('token', $tokenHashed)->delete();
+        return response()->json(['status' => 200, 'data' => 'Wylogowano'], 200);
+    }
     public function logIn(Request $request)
     {
         $validator = Validator::make($request->all(), [
