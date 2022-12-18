@@ -6,6 +6,7 @@ use App\Http\Resources\SclassesResource;
 use App\Models\Sclass;
 use App\Models\RegisterUser;
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -175,11 +176,21 @@ class SclassesController extends Controller
         // return response($class->subjects, 200);
         return response()->json(['status' => 200, 'data' => $class->subjects], 200);
     }
-    public function getClassesAssignedToThisTeacher($teacherId)
+    public function getClassesAssignedToThisTeacher($subjectId)
     {
-        $schoolClasses = DB::table('sclass_subject')->join('teachers', 'teachers.subject_id', '=', 'sclass_subject.subject_id')->get();
+        if (!Subject::where('id', $subjectId)->exists()) {
+            return response()->json(['status' => 404, 'data' => "Przedmiot o podanym ID nie istnieje"], 404);
+        }
+        $classes = array();
 
-        return response()->json(['status' => 200, 'data' => $schoolClasses], 200);
+        $schoolClassesSubjects = DB::table('sclass_subject')->where('subject_id', $subjectId)->get();
+
+        foreach ($schoolClassesSubjects as $sss) {
+            $classInfo = Sclass::where('id', $sss->sclass_id)->first();
+            array_push($classes, $classInfo);
+        }
+
+        return response()->json(['status' => 200, 'data' => $classes], 200);
     }
     public function getClassAssignedToThisStudent($student_userId)
     {

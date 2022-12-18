@@ -27,6 +27,7 @@ Route::apiResource('users', RegisterUsersController::class)->middleware('UserCRU
 Route::apiResource('subjects', SubjectController::class)->middleware('SubjectCRUD');
 Route::apiResource('school_classes', SclassesController::class)->middleware('SchoolClassCRUD');
 Route::apiResource('activities', ActivityController::class)->middleware('ActivityCRUD');
+Route::get('get_user_by_id/{id}', [RegisterUsersController::class, 'getUserById'])->middleware('UserREAD');
 
 Route::apiResource('marks', MarksController::class)->middleware('MarkREAD');
 Route::delete('marks/{id}/{moderator_id}', [MarksController::class, 'deleteMarkAndCreateMarkModification'])->middleware('MarkCRUD');
@@ -64,7 +65,7 @@ Route::get('/teacher/{teacher_user_id}/get_subject_assigned', [RegisterUsersCont
 Route::post('/login', [RegisterUsersController::class, 'logIn']);
 Route::post('/user_assigned_to_token', [RegisterUsersController::class, 'getUserAssignedToToken']);
 
-Route::get('/teacher/{teacherId}/get_classes', [SclassesController::class, 'getClassesAssignedToThisTeacher']);
+Route::get('/teacher/subject/{subjectId}/get_classes', [SclassesController::class, 'getClassesAssignedToThisTeacher']);
 Route::get('/student/{studentUserId}/get_class', [SclassesController::class, 'getClassAssignedToThisStudent']);
 
 Route::get('/user/{userId}/get_student_id', [RegisterUsersController::class, 'getUserStudentId']);

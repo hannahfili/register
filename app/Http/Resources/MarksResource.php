@@ -19,6 +19,20 @@ class MarksResource extends JsonResource
     {
         $student = RegisterUser::where('id', $this->user_student_id)->first();
         $moderator = RegisterUser::where('id', $this->moderator_id)->first();
+        $phpdate = strtotime($this->updated_at);
+        $mysqldate = date('Y-m-d H:i:s', $phpdate);
+        if ($mysqldate == $this->mark_datetime) {
+            return [
+                'id' => $this->id,
+                'student' => new RegisterUserResource($student),
+                'subject' => $this->subject,
+                'moderator' => new RegisterUserResource($moderator),
+                'activity' => $this->activity,
+                'mark_datetime' => $this->mark_datetime,
+                'value' => $this->value,
+                'updated_at' => ""
+            ];
+        }
         return [
             'id' => $this->id,
             'student' => new RegisterUserResource($student),
@@ -26,7 +40,8 @@ class MarksResource extends JsonResource
             'moderator' => new RegisterUserResource($moderator),
             'activity' => $this->activity,
             'mark_datetime' => $this->mark_datetime,
-            'value' => $this->value
+            'value' => $this->value,
+            'updated_at' => $mysqldate
         ];
     }
 }

@@ -114,6 +114,8 @@ class MarksController extends Controller
         $oldMarkValue = $markToUpdate->value;
 
         $markToUpdate->value = $request->new_value;
+        $markToUpdate->moderator_id = $request->moderator_id;
+        $markToUpdate->updated_at = Carbon::now();
         $markToUpdate->save();
 
         Mark_modification::create([
@@ -124,6 +126,7 @@ class MarksController extends Controller
             'mark_after_modification' => $request->new_value,
             'modification_reason' => $request->modification_reason
         ]);
+        return response()->json(['status' => 200, 'data' => 'Edycja oceny przebiegła pomyślnie'], 200);
     }
 
     /**

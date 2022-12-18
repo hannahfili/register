@@ -5,6 +5,7 @@ namespace App\Helpers;
 abstract class Abilities
 {
     const USER_CRUD = 'USER_CRUD';
+    const USER_READ = 'USER_READ';
     const SCHOOL_CLASS_CRUD = 'SCHOOL_CLASS_CRUD';
     const SUBJECT_CRUD = 'SUBJECT_CRUD';
     const SUBJECT_READ = 'SUBJECT_READ';

@@ -71,6 +71,8 @@ class Kernel extends HttpKernel
         'SchoolClassCRUD' => \App\Http\Middleware\SchoolClassCRUD::class,
         'SubjectCRUD' => \App\Http\Middleware\SubjectCRUD::class,
         'UserCRUD' => \App\Http\Middleware\UserCRUD::class,
+        'UserREAD' => \App\Http\Middleware\UserREAD::class,
         'SubjectREAD' => \App\Http\Middleware\SubjectREAD::class,
+
     ];
 }

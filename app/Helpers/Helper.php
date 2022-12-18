@@ -81,6 +81,7 @@ class Helper
         if (Helper::userIsAdmin($user)) {
             return [
                 Abilities::USER_CRUD,
+                Abilities::USER_READ,
                 Abilities::SCHOOL_CLASS_CRUD,
                 Abilities::SUBJECT_CRUD,
                 Abilities::MARK_CRUD,
@@ -90,12 +91,13 @@ class Helper
             ];
         } else if (Helper::userIsTeacher($user)) {
             return [
+                Abilities::USER_READ,
                 Abilities::SCHOOL_CLASS_CRUD,
                 Abilities::SUBJECT_CRUD,
                 Abilities::MARK_CRUD,
                 Abilities::MARK_READ,
                 Abilities::MARK_MODIFICATION_CRUD,
-                Abilities::SUBJECT_READ
+                Abilities::ACTIVITY_CRUD
             ];
         } else if (Helper::userIsStudent($user)) {
             return [
