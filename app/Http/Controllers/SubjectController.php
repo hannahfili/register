@@ -43,7 +43,6 @@ class SubjectController extends Controller
             'name' => $request->name,
             'description' => $request->description,
         ]);
-        // return response($newSubject, 200);
         return response()->json(['status' => 200, 'data' => $newSubject], 200);
     }
 
@@ -62,7 +61,6 @@ class SubjectController extends Controller
         $class = Sclass::where('id', $classId)->first();
 
         if ($subject->sclasses()->wherePivot('sclass_id', '=', $class->id)->exists()) {
-            // return response('The class has already been assigned to the subject', 400);
             return response()->json(['status' => 400, 'data' => 'Ta klasa została już przypisana do przedmioty'], 400);
         }
 
@@ -88,7 +86,6 @@ class SubjectController extends Controller
         $teacher->subject_id = $subject->id;
         $teacher->save();
 
-        // return response('Teacher assigned properly', 200);
         return response()->json(['status' => 200, 'data' => 'Nauczyciel został pomyślnie przypisany do przedmiotu'], 200);
     }
 
@@ -120,13 +117,11 @@ class SubjectController extends Controller
             return response($validator->errors(), 400);
         }
         if (count($request->all()) == 0) {
-            // return response('Nothing data given to update', 400);
             return response()->json(['status' => 400, 'data' => 'Nie wysłano żadnych danych'], 400);
         }
         if (Subject::where('id', $id)->exists()) {
             $subjectToUpdate = Subject::find($id);
         } else {
-            // return response("Subject with given id doesn't exist", 400);
             return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
         }
         if ($request->has('name')) {
@@ -149,10 +144,8 @@ class SubjectController extends Controller
         if (Subject::where('id', $id)->exists()) {
             $subjectToDelete = Subject::find($id);
             $subjectToDelete->delete();
-            // return response('Subject deleted', 200);
             return response()->json(['status' => 200, 'data' => 'Przedmiot szkolny usunięty pomyślnie'], 200);
         }
-        // return response("Subject with given id doesn't exist", 400);
         return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
     }
 
@@ -166,10 +159,8 @@ class SubjectController extends Controller
 
         if (Subject::where('id', $id)->exists()) {
             $classes = Subject::find($id)->sclasses()->get();
-            // return response('Subject deleted', 200);
             return response()->json(['status' => 200, 'data' => SclassesResource::collection(($classes))], 200);
         }
-        // return response("Subject with given id doesn't exist", 400);
         return response()->json(['status' => 404, 'data' => 'Przedmiot szkolny o podanym ID nie istnieje'], 404);
     }
     /**

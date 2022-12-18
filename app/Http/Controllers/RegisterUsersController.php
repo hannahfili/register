@@ -233,10 +233,8 @@ class RegisterUsersController extends Controller
         if (RegisterUser::where('id', $id)->exists()) {
             $userToDelete = RegisterUser::find($id);
             $userToDelete->delete();
-            // return response('RegisterUser deleted', 200);
             return response()->json(['status' => 200, 'data' => 'Użytkownik został pomyślnie usunięty'], 200);
         }
-        // return response('User with given id is not found', 400);
         return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
     }
 
@@ -250,7 +248,6 @@ class RegisterUsersController extends Controller
         if (Student::where('id', $studentId)->exists()) {
             $student = Student::find($studentId);
         } else {
-            // return response("Student with given id doesn't exist", 400);
             return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
         }
         $student->sclass_id = null;
@@ -264,8 +261,6 @@ class RegisterUsersController extends Controller
     public function getStudentsNotAssignedToAnyClass()
     {
         $students = Student::where('sclass_id', null)->get();
-        // $teacherToUpdate = Teacher::where('user_id', $id)->first();
-        // RegisterUserResource::collection(RegisterUser::all());
         return StudentsCollectionResource::collection($students);
     }
     public function getAllStudents()

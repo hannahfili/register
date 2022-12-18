@@ -68,18 +68,6 @@ class ActivityController extends Controller
         return new ActivitiesResource($activity);
     }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @param  int  $id
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function update(Request $request, $id)
-    // {
-    //     //
-    // }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -91,10 +79,8 @@ class ActivityController extends Controller
         if (Activity::where('id', $id)->exists()) {
             $activityToDelete = Activity::find($id);
             $activityToDelete->delete();
-            // return response('Activity deleted', 200);
             return response()->json(['status' => 200, 'data' => 'Activity deleted'], 200);
         }
-        // return response("Activity with given id doesn't exist", 400);
         return response()->json(['status' => 400, 'data' => "Activity with given id doesn't exist"], 400);
     }
 }
