@@ -98,4 +98,22 @@ class MarkModificationsController extends Controller
         }
         return response()->json(['status' => 200, 'data' => $marks_modif], 200);
     }
+    public function getStudentMarksModificationsOfParticularSubject($studentUserId, $subject_id)
+    {
+        $modifications = new Collection();
+        if (!Student::where('user_id', $studentUserId)->exists()) {
+            return response()->json(['status' => 404, 'data' => 'Student o podanym ID nie istnieje'], 404);
+        }
+        $marks = Mark::where('user_student_id', $studentUserId)
+            ->where('subject_id', $subject_id)->get();
+        foreach ($marks as $mark) {
+            $mark_mods = $mark->mark_modifications()->get();
+            $markAndMarkModifs = array(
+                "mark" => new MarksResource($mark),
+                "marks_modifications" => MarkModificationsResource::collection($mark_mods)
+            );
+            $modifications->add($markAndMarkModifs);
+        }
+        return response()->json(['status' => 200, 'data' => $modifications], 200);
+    }
 }
