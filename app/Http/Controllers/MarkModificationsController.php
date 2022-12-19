@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MarksResource;
 use App\Http\Resources\MarkModificationsResource;
+use App\Http\Resources\RegisterUserResource;
 use App\Models\Mark_modification;
 use App\Models\Student;
 use App\Models\Mark;
+use App\Models\RegisterUser;
+use App\Models\Sclass;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -64,5 +67,35 @@ class MarkModificationsController extends Controller
         }
 
         return MarkModificationsResource::collection($modifications);
+    }
+    public function getClassMarksModificationsOfParticularSubjectDividedByStudents($classId, $subjectId)
+    {
+        $marks_modif = new Collection();
+        $school_class = Sclass::where('id', $classId)->first();
+        if ($school_class == null) {
+            return response()->json(['status' => 404, 'data' => 'Klasa o podanym ID nie istnieje'], 404);
+        }
+        $students = Student::where('sclass_id', $school_class->id)->get();
+        foreach ($students as $s) {
+            $user = RegisterUser::where('id', $s->user_id)->first();
+            $studentMarks = Mark::where('user_student_id', $s->user_id)
+                ->where('subject_id', $subjectId)->get();
+            $modifications = new Collection();
+
+            foreach ($studentMarks as $mark) {
+                $mark_mods = Mark_modification::where('mark_id', $mark->id)->get();
+                $markAndMarkModifs = array(
+                    "mark" => new MarksResource($mark),
+                    "marks_modifications" => MarkModificationsResource::collection($mark_mods)
+                );
+                $modifications->add($markAndMarkModifs);
+            }
+            $studentAndMarksModifs = array(
+                "student" => new RegisterUserResource($user),
+                "marks_modifications" => $modifications
+            );
+            $marks_modif->add($studentAndMarksModifs);
+        }
+        return response()->json(['status' => 200, 'data' => $marks_modif], 200);
     }
 }

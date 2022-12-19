@@ -38,6 +38,7 @@ Route::get('marks/class/{classId}/subject/{subjectId}', [MarksController::class,
 Route::apiResource('marks_modifications', MarkModificationsController::class)->middleware('MarkModificationCRUD');
 // Route::get('marks_modifications', [MarkModificationsController::class, 'index']);
 Route::get('marks_modifications/student/{user_student_id}', [MarkModificationsController::class, 'getMarksModificationsOfParticularUserStudent']);
+Route::get('marks_modifications/class/{classId}/subject/{subjectId}', [MarkModificationsController::class, 'getClassMarksModificationsOfParticularSubjectDividedByStudents']);
 
 Route::post('assign_class/{class_id}/to_subject/{subject_id}', [SubjectController::class, 'assignClassToSubject']);
 Route::post('assign_subject_to_teacher/{subject_id}/{teacher_id}', [SubjectController::class, 'assignTeacher']);
