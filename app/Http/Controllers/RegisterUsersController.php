@@ -230,12 +230,15 @@ class RegisterUsersController extends Controller
      */
     public function destroy($id)
     {
+        if (PersonalAccessToken::where('tokenable_id', $id)->exists()) {
+            $tokenToDelete = PersonalAccessToken::where('tokenable_id', $id)->first();
+            $tokenToDelete->delete();
+        }
         if (RegisterUser::where('id', $id)->exists()) {
             $userToDelete = RegisterUser::find($id);
             $userToDelete->delete();
             return response()->json(['status' => 200, 'data' => 'Użytkownik został pomyślnie usunięty'], 200);
         }
-        return response()->json(['status' => 404, 'data' => 'Użytkownik o podanym ID nie istnieje'], 404);
     }
 
     /**
